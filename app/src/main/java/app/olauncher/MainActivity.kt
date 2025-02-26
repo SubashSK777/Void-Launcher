@@ -91,6 +91,12 @@ class MainActivity : AppCompatActivity() {
             val packageName = intent.getStringExtra("blocked_package") ?: return
             showBlockedAppDialog(packageName)
         }
+
+        if (intent?.getBooleanExtra("show_blocked_content_dialog", false) == true) {
+            val packageName = intent.getStringExtra("blocked_package") ?: return
+            val blockedText = intent.getStringExtra("blocked_text") ?: return
+            showBlockedContentDialog(packageName, blockedText)
+        }
     }
 
     override fun onStart() {
@@ -400,4 +406,10 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
+
+    private fun showBlockedContentDialog(packageName: String, blockedText: String) {
+        val appName = try {
+            packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
+        } catch (e: Exception) {
+            packageName
 }

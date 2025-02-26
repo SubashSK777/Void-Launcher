@@ -176,6 +176,23 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                     bundleOf(Constants.Key.FLAG to Constants.FLAG_BLOCKED_APPS)
                 )
             }
+
+            R.id.keywordFilter -> {
+                if (!isAccessServiceEnabled(requireContext())) {
+                    showAccessibilityDialog()
+                    return@setOnClickListener
+                }
+                showKeywordFilterDialog()
+            }
+
+            R.id.keywordFilterSwitch -> {
+                if (!isAccessServiceEnabled(requireContext())) {
+                    binding.keywordFilterSwitch.isChecked = false
+                    showAccessibilityDialog()
+                    return@setOnClickListener
+                }
+                prefs.keywordFilterEnabled = binding.keywordFilterSwitch.isChecked
+            }
         }
     }
 
@@ -270,6 +287,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.toggleLock.setOnLongClickListener(this)
 
         binding.blockedApps.setOnClickListener(this)
+
+        binding.keywordFilter.setOnClickListener(this)
+        binding.keywordFilterSwitch.setOnClickListener(this)
     }
 
     private fun initObservers() {
@@ -660,6 +680,33 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 } else {
                     requireContext().showToast(R.string.invalid_email)
                 }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun showKeywordFilterDialog() {
+        val keywordsText = prefs.blockedKeywords.joinToString("\n")
+        val input = EditText(requireContext()).apply {
+            setText(keywordsText)
+            hint = getString(R.string.keyword_filter_hint)
+            gravity = Gravity.TOP
+            minLines = 3
+            maxLines = 8
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.blocked_keywords))
+            .setMessage(getString(R.string.keyword_filter_message))
+            .setView(input)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                val keywords = input.text.toString()
+                    .split("\n")
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .toSet()
+                prefs.blockedKeywords = keywords
+                requireContext().showToast(R.string.keywords_saved)
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()

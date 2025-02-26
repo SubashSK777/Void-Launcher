@@ -26,54 +26,66 @@ class MyAccessibilityService : AccessibilityService() {
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-        try {
-            val source: AccessibilityNodeInfo = event.source ?: return
-            
-            // Handle lock screen action
-            if ((source.className == "android.widget.FrameLayout") and
-                (source.contentDescription == getString(R.string.lock_layout_description))
-            ) {
-                performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)
-                return
-            }
+        if (!prefs.keywordFilterEnabled) return
 
-            // Check if current app is blocked
-            val packageName = event.packageName?.toString() ?: return
-            if (isAppBlocked(packageName)) {
-                performGlobalAction(GLOBAL_ACTION_HOME)
-                showBlockedAppDialog(packageName)
+        when (event.eventType) {
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
+                try {
+                    val source = event.source ?: return
+                    val text = getTextFromNode(source)
+                    
+                    // Skip system UI and launcher
+                    if (event.packageName == "com.android.systemui" || 
+                        event.packageName == "app.olauncher") return
+
+                    if (containsBlockedKeyword(text)) {
+                        // Don't block system notifications
+                        if (event.packageName == "android") return
+                        
+                        performGlobalAction(GLOBAL_ACTION_HOME)
+                        showBlockedContentDialog(event.packageName.toString(), text)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
-        } catch (e: Exception) {
-            return
         }
     }
 
-    private fun isAppBlocked(packageName: String): Boolean {
-        val blockedApps = prefs.blockedApps
-        if (!blockedApps.contains(packageName)) return false
-
-        val timestamps = prefs.blockedAppsTimestamps
-        val blockEndTime = timestamps[packageName] ?: return false
+    private fun getTextFromNode(node: AccessibilityNodeInfo): String {
+        val text = StringBuilder()
         
-        if (blockEndTime < System.currentTimeMillis()) {
-            // Block expired, remove from blocked apps
-            val newBlockedApps = blockedApps.toMutableSet()
-            newBlockedApps.remove(packageName)
-            prefs.blockedApps = newBlockedApps
-            
-            val newTimestamps = timestamps.toMutableMap()
-            newTimestamps.remove(packageName)
-            prefs.blockedAppsTimestamps = newTimestamps
-            return false
+        // Get node's text
+        if (node.text != null) {
+            text.append(node.text)
         }
-        return true
+        
+        // Get text from child nodes
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+            if (child != null) {
+                text.append(" ").append(getTextFromNode(child))
+                child.recycle()
+            }
+        }
+        
+        return text.toString().lowercase()
     }
 
-    private fun showBlockedAppDialog(packageName: String) {
+    private fun containsBlockedKeyword(text: String): Boolean {
+        val keywords = prefs.blockedKeywords
+        return keywords.any { keyword ->
+            text.lowercase().contains(keyword.lowercase())
+        }
+    }
+
+    private fun showBlockedContentDialog(packageName: String, text: String) {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            putExtra("show_blocked_dialog", true)
+            putExtra("show_blocked_content_dialog", true)
             putExtra("blocked_package", packageName)
+            putExtra("blocked_text", text)
         }
         startActivity(intent)
     }
