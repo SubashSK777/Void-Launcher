@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -21,12 +23,11 @@ import app.olauncher.databinding.AdapterAppDrawerBinding
 import app.olauncher.helper.hideKeyboard
 import app.olauncher.helper.isSystemApp
 import app.olauncher.helper.showKeyboard
-import java.text.Normalizer
 
 class AppDrawerAdapter(
     private var flag: Int,
     private val appLabelGravity: Int,
-    private val appClickListener: (AppModel) -> Unit,
+    private val appClickListener: (AppModel, Int) -> Unit,
     private val appInfoListener: (AppModel) -> Unit,
     private val appDeleteListener: (AppModel) -> Unit,
     private val appHideListener: (AppModel, Int) -> Unit,
