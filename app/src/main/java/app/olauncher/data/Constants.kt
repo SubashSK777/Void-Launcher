@@ -120,14 +120,14 @@ object Constants {
     const val FLAG_BLOCKED_APPS = 102
 
     object BlockDuration {
-        const val ONE_HOUR = ONE_HOUR_IN_MILLIS
-        const val FOUR_HOURS = ONE_HOUR_IN_MILLIS * 4
-        const val EIGHT_HOURS = ONE_HOUR_IN_MILLIS * 8
-        const val ONE_DAY = ONE_DAY_IN_MILLIS
-        const val ONE_WEEK = ONE_DAY_IN_MILLIS * 7
+        const val ONE_HOUR = 60 * 60 * 1000L
+        const val FOUR_HOURS = 4 * ONE_HOUR
+        const val EIGHT_HOURS = 8 * ONE_HOUR
+        const val ONE_DAY = 24 * ONE_HOUR
+        const val ONE_WEEK = 7 * ONE_DAY
     }
 
-    const val OTP_EXPIRY_TIME = 600000L // 10 minutes in milliseconds
-    const val OTP_LOCKOUT_DURATION = 1800000L // 30 minutes in milliseconds
+    const val OTP_EXPIRY_TIME = 5 * 60 * 1000L // 5 minutes
+    const val OTP_LOCKOUT_DURATION = 30 * 60 * 1000L // 30 minutes
     const val MAX_OTP_ATTEMPTS = 3
 }

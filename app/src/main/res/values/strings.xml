@@ -88,7 +88,7 @@
         \n\nIt\'s also the best way to support the developers of Olauncher. Check it out!</string>
     <string name="wallpaper_message">Olauncher offers beautiful new wallpapers daily. Give your homescreen a fresh new look every day, for free!
         \n\nWant to try it?</string>
-    <string name="accessibility_service_description">The accessibility permission is required to enable double tap to lock. Any data acquired by Olauncher via this service will not leave your device.</string>
+    <string name="accessibility_service_description">Required for app blocking and content filtering features</string>
     <string name="support_olauncher_for_free">Support Olauncher for free by using our Amazon affiliate link.</string>
     <string name="support_olauncher_message">Every time you buy something using our link, we get a small commission. Please save the link and use it whenever you shop online.\nThank you!</string>
     <string name="open">Open link</string>
@@ -159,12 +159,12 @@
     <string name="none">None</string>
     <string name="app_blocked">App blocked</string>
     <string name="app_is_blocked">This app is currently blocked</string>
-    <string name="block_duration">Block duration</string>
-    <string name="one_hour">1 hour</string>
-    <string name="four_hours">4 hours</string>
-    <string name="eight_hours">8 hours</string>
-    <string name="one_day">1 day</string>
-    <string name="one_week">1 week</string>
+    <string name="block_duration">Block Duration</string>
+    <string name="one_hour">1 Hour</string>
+    <string name="four_hours">4 Hours</string>
+    <string name="eight_hours">8 Hours</string>
+    <string name="one_day">1 Day</string>
+    <string name="one_week">1 Week</string>
     <string name="block_app">Block app</string>
     <string name="request_otp">Request OTP</string>
     <string name="enter_otp">Enter OTP</string>
