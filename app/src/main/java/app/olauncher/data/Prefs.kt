@@ -97,6 +97,9 @@ class Prefs(context: Context) {
     private const val OTP_ATTEMPTS = "OTP_ATTEMPTS"
     private const val OTP_LOCKOUT_TIME = "OTP_LOCKOUT_TIME"
 
+    private const val BLOCKED_KEYWORDS = "BLOCKED_KEYWORDS"
+    private const val FILTER_ENABLED = "FILTER_ENABLED"
+
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0);
 
     var firstOpen: Boolean
@@ -439,6 +442,14 @@ class Prefs(context: Context) {
     var otpLockoutTime: Long
         get() = prefs.getLong(OTP_LOCKOUT_TIME, 0)
         set(value) = prefs.edit().putLong(OTP_LOCKOUT_TIME, value).apply()
+
+    var blockedKeywords: Set<String>
+        get() = prefs.getStringSet(BLOCKED_KEYWORDS, setOf()) ?: setOf()
+        set(value) = prefs.edit().putStringSet(BLOCKED_KEYWORDS, value).apply()
+
+    var keywordFilterEnabled: Boolean
+        get() = prefs.getBoolean(FILTER_ENABLED, false)
+        set(value) = prefs.edit().putBoolean(FILTER_ENABLED, value).apply()
 
     fun getAppName(location: Int): String {
         return when (location) {
