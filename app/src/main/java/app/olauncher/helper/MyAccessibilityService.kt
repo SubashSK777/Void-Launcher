@@ -112,4 +112,42 @@ class MyAccessibilityService : AccessibilityService() {
     override fun onInterrupt() {
 
     }
+
+    private fun isAppBlocked(packageName: String): Boolean {
+        val blockedApps = prefs.blockedApps
+        if (!blockedApps.contains(packageName)) return false
+
+        val timestamps = prefs.blockedAppsTimestamps
+        val blockEndTime = timestamps[packageName] ?: return false
+        
+        if (blockEndTime < System.currentTimeMillis()) {
+            // Block expired, remove from blocked apps
+            val newBlockedApps = blockedApps.toMutableSet()
+            newBlockedApps.remove(packageName)
+            prefs.blockedApps = newBlockedApps
+            
+            val newTimestamps = timestamps.toMutableMap()
+            newTimestamps.remove(packageName)
+            prefs.blockedAppsTimestamps = newTimestamps
+
+            // Notify user
+            applicationContext.showToast(
+                getString(R.string.app_unblocked_auto, 
+                    getAppName(packageName)
+                )
+            )
+            return false
+        }
+        return true
+    }
+
+    private fun getAppName(packageName: String): String {
+        return try {
+            packageManager.getApplicationInfo(packageName, 0)
+                .loadLabel(packageManager)
+                .toString()
+        } catch (e: Exception) {
+            packageName
+        }
+    }
 }
