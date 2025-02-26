@@ -91,6 +91,12 @@ class Prefs(context: Context) {
     private val BLOCKED_APPS = "BLOCKED_APPS"
     private val BLOCKED_APPS_TIMESTAMPS = "BLOCKED_APPS_TIMESTAMPS"
 
+    private const val PARTNER_EMAIL = "PARTNER_EMAIL"
+    private const val OTP_TIMESTAMP = "OTP_TIMESTAMP"
+    private const val OTP_VALUE = "OTP_VALUE"
+    private const val OTP_ATTEMPTS = "OTP_ATTEMPTS"
+    private const val OTP_LOCKOUT_TIME = "OTP_LOCKOUT_TIME"
+
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0);
 
     var firstOpen: Boolean
