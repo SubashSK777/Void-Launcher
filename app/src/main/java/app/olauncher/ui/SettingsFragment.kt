@@ -89,6 +89,31 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         initObservers()
 
         binding.keywordFilterSwitch.isChecked = prefs.keywordFilterEnabled
+
+        binding.blockedAppsButton.setOnClickListener {
+            showBlockedAppsDialog()
+        }
+
+        binding.keywordFilter.setOnClickListener {
+            if (!isAccessServiceEnabled(requireContext())) {
+                showAccessibilityDialog()
+                return@setOnClickListener
+            }
+            showKeywordFilterDialog()
+        }
+
+        binding.keywordFilterSwitch.setOnClickListener {
+            if (!isAccessServiceEnabled(requireContext())) {
+                binding.keywordFilterSwitch.isChecked = false
+                showAccessibilityDialog()
+                return@setOnClickListener
+            }
+            prefs.keywordFilterEnabled = binding.keywordFilterSwitch.isChecked
+        }
+
+        binding.partnerEmailButton.setOnClickListener {
+            showPartnerEmailDialog()
+        }
     }
 
     override fun onClick(view: View) {
@@ -666,10 +691,69 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         }
     }
 
+    private fun showBlockedAppsDialog() {
+        val blockedApps = prefs.blockedApps
+        if (blockedApps.isEmpty()) {
+            AlertDialog.Builder(requireContext())
+                .setMessage(getString(R.string.no_blocked_apps))
+                .setPositiveButton(getString(R.string.okay), null)
+                .show()
+            return
+        }
+
+        val appNames = blockedApps.map { packageName ->
+            try {
+                val appInfo = requireContext().packageManager.getApplicationInfo(packageName, 0)
+                appInfo.loadLabel(requireContext().packageManager).toString()
+            } catch (e: Exception) {
+                packageName
+            }
+        }.toTypedArray()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.blocked_apps))
+            .setItems(appNames) { _, which ->
+                val packageName = blockedApps.elementAt(which)
+                showUnblockConfirmationDialog(packageName)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun showUnblockConfirmationDialog(packageName: String) {
+        val appName = try {
+            val appInfo = requireContext().packageManager.getApplicationInfo(packageName, 0)
+            appInfo.loadLabel(requireContext().packageManager).toString()
+        } catch (e: Exception) {
+            packageName
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.unblock_app))
+            .setMessage(getString(R.string.unblock_confirmation, appName))
+            .setPositiveButton(getString(R.string.unblock)) { _, _ ->
+                // Remove from blocked apps
+                val newBlockedApps = prefs.blockedApps.toMutableSet()
+                newBlockedApps.remove(packageName)
+                prefs.blockedApps = newBlockedApps
+                
+                // Remove from timestamps
+                val newTimestamps = prefs.blockedAppsTimestamps.toMutableMap()
+                newTimestamps.remove(packageName)
+                prefs.blockedAppsTimestamps = newTimestamps
+                
+                requireContext().showToast(R.string.app_unblocked_manual)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
     private fun showPartnerEmailDialog() {
-        val input = EditText(requireContext())
-        input.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        input.setText(prefs.partnerEmail)
+        val input = EditText(requireContext()).apply {
+            inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            setText(prefs.partnerEmail)
+            hint = getString(R.string.partner_email_hint)
+        }
 
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.accountability_partner_email))
@@ -678,9 +762,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 val email = input.text.toString().trim()
                 if (email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     prefs.partnerEmail = email
-                    requireContext().showToast(R.string.email_saved)
+                    requireContext().showToast(R.string.partner_email_saved)
                 } else {
-                    requireContext().showToast(R.string.invalid_email)
+                    requireContext().showToast(R.string.partner_email_invalid)
                 }
             }
             .setNegativeButton(getString(R.string.cancel), null)
