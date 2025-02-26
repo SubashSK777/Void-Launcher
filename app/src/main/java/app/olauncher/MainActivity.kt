@@ -412,4 +412,13 @@ class MainActivity : AppCompatActivity() {
             packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
         } catch (e: Exception) {
             packageName
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.content_blocked))
+            .setMessage(getString(R.string.content_blocked_message, appName))
+            .setPositiveButton(getString(R.string.okay)) { _, _ -> }
+            .create()
+            .show()
+    }
 }

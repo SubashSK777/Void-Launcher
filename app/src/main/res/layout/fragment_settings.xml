@@ -1019,6 +1019,25 @@
                 android:padding="12dp"
                 android:text="@string/digital_minimalism" />
 
+            <LinearLayout
+                android:id="@+id/keywordFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/keyword_filter" />
+
+                <Switch
+                    android:id="@+id/keywordFilterSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

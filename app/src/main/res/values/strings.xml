@@ -174,4 +174,11 @@
     <string name="otp_send_failed">Failed to send OTP. Please make sure you have set up an accountability partner email in settings.</string>
     <string name="app_unblocked">App unblocked</string>
     <string name="error">Error</string>
+    <string name="blocked_keywords">Blocked Keywords</string>
+    <string name="keyword_filter">Keyword Filter</string>
+    <string name="keyword_filter_hint">Enter keywords to block (one per line)</string>
+    <string name="keyword_filter_message">Content containing these keywords will be blocked. System notifications will not be blocked.</string>
+    <string name="keywords_saved">Keywords saved</string>
+    <string name="content_blocked">Content Blocked</string>
+    <string name="content_blocked_message">Content from %s was blocked because it contains blocked keywords.</string>
 </resources>
