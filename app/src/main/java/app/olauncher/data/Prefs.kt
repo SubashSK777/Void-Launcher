@@ -88,6 +88,9 @@ class Prefs(context: Context) {
     private val CALENDAR_APP_USER = "CALENDAR_APP_USER"
     private val CALENDAR_APP_CLASS_NAME = "CALENDAR_APP_CLASS_NAME"
 
+    private val BLOCKED_APPS = "BLOCKED_APPS"
+    private val BLOCKED_APPS_TIMESTAMPS = "BLOCKED_APPS_TIMESTAMPS"
+
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0);
 
     var firstOpen: Boolean
@@ -393,6 +396,23 @@ class Prefs(context: Context) {
     var calendarAppClassName: String?
         get() = prefs.getString(CALENDAR_APP_CLASS_NAME, "").toString()
         set(value) = prefs.edit().putString(CALENDAR_APP_CLASS_NAME, value).apply()
+
+    var blockedApps: Set<String>
+        get() = prefs.getStringSet(BLOCKED_APPS, setOf()) ?: setOf()
+        set(value) = prefs.edit().putStringSet(BLOCKED_APPS, value).apply()
+
+    var blockedAppsTimestamps: Map<String, Long>
+        get() {
+            val timestampsSet = prefs.getStringSet(BLOCKED_APPS_TIMESTAMPS, setOf()) ?: setOf()
+            return timestampsSet.associate {
+                val parts = it.split("|")
+                parts[0] to parts[1].toLong()
+            }
+        }
+        set(value) {
+            val timestampsSet = value.map { "${it.key}|${it.value}" }.toSet()
+            prefs.edit().putStringSet(BLOCKED_APPS_TIMESTAMPS, timestampsSet).apply()
+        }
 
     fun getAppName(location: Int): String {
         return when (location) {
