@@ -32,6 +32,7 @@ class AppDrawerAdapter(
     private val appDeleteListener: (AppModel) -> Unit,
     private val appHideListener: (AppModel, Int) -> Unit,
     private val appRenameListener: (AppModel, String) -> Unit,
+    private val appBlockListener: (AppModel, Long) -> Unit
 ) : ListAdapter<AppModel, AppDrawerAdapter.ViewHolder>(DIFF_CALLBACK), Filterable {
 
     companion object {
@@ -68,7 +69,8 @@ class AppDrawerAdapter(
                 appDeleteListener,
                 appInfoListener,
                 appHideListener,
-                appRenameListener
+                appRenameListener,
+                appBlockListener
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -115,7 +117,7 @@ class AppDrawerAdapter(
                 && isBangSearch.not()
                 && flag == Constants.FLAG_LAUNCH_APP
                 && appFilteredList.size > 0
-            ) appClickListener(appFilteredList[0])
+            ) appClickListener(appFilteredList[0], 0)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -139,7 +141,7 @@ class AppDrawerAdapter(
 
     fun launchFirstInList() {
         if (appFilteredList.size > 0)
-            appClickListener(appFilteredList[0])
+            appClickListener(appFilteredList[0], 0)
     }
 
     class ViewHolder(private val binding: AdapterAppDrawerBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -149,11 +151,12 @@ class AppDrawerAdapter(
             appLabelGravity: Int,
             myUserHandle: UserHandle,
             appModel: AppModel,
-            clickListener: (AppModel) -> Unit,
+            clickListener: (AppModel, Int) -> Unit,
             appDeleteListener: (AppModel) -> Unit,
             appInfoListener: (AppModel) -> Unit,
             appHideListener: (AppModel, Int) -> Unit,
             appRenameListener: (AppModel, String) -> Unit,
+            appBlockListener: (AppModel, Long) -> Unit
         ) =
             with(binding) {
                 appHideLayout.visibility = View.GONE
@@ -163,7 +166,7 @@ class AppDrawerAdapter(
                 appTitle.gravity = appLabelGravity
                 otherProfileIndicator.isVisible = appModel.user != myUserHandle
 
-                appTitle.setOnClickListener { clickListener(appModel) }
+                appTitle.setOnClickListener { clickListener(appModel, bindingAdapterPosition) }
                 appTitle.setOnLongClickListener {
                     if (appModel.appPackage.isNotEmpty()) {
                         appDelete.alpha = if (root.context.isSystemApp(appModel.appPackage)) 0.5f else 1.0f
@@ -255,6 +258,9 @@ class AppDrawerAdapter(
                     appTitle.visibility = View.VISIBLE
                 }
                 appHide.setOnClickListener { appHideListener(appModel, bindingAdapterPosition) }
+                appBlock.setOnClickListener {
+                    showBlockDurationDialog(root.context, appModel)
+                }
             }
 
         private fun getAppName(context: Context, appPackage: String): String {
@@ -262,6 +268,31 @@ class AppDrawerAdapter(
             return packageManager.getApplicationLabel(
                 packageManager.getApplicationInfo(appPackage, 0)
             ).toString()
+        }
+
+        private fun showBlockDurationDialog(context: Context, appModel: AppModel) {
+            val durations = arrayOf(
+                context.getString(R.string.one_hour),
+                context.getString(R.string.four_hours),
+                context.getString(R.string.eight_hours),
+                context.getString(R.string.one_day),
+                context.getString(R.string.one_week)
+            )
+
+            AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.block_duration))
+                .setItems(durations) { _, which ->
+                    val duration = when (which) {
+                        0 -> Constants.BlockDuration.ONE_HOUR
+                        1 -> Constants.BlockDuration.FOUR_HOURS
+                        2 -> Constants.BlockDuration.EIGHT_HOURS
+                        3 -> Constants.BlockDuration.ONE_DAY
+                        4 -> Constants.BlockDuration.ONE_WEEK
+                        else -> Constants.BlockDuration.ONE_HOUR
+                    }
+                    appBlockListener(appModel, duration)
+                }
+                .show()
         }
     }
 }

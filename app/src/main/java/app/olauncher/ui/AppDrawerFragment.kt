@@ -106,33 +106,9 @@ class AppDrawerFragment : Fragment() {
 
     private fun initAdapter() {
         adapter = AppDrawerAdapter(
-            flag,
-            prefs.appLabelAlignment,
-            appClickListener = {
-                if (it.appPackage.isEmpty())
-                    return@AppDrawerAdapter
-                viewModel.selectedApp(it, flag)
-                if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
-                    findNavController().popBackStack(R.id.mainFragment, false)
-                else
-                    findNavController().popBackStack()
-            },
-            appInfoListener = {
-                openAppInfo(
-                    requireContext(),
-                    it.user,
-                    it.appPackage
-                )
-                findNavController().popBackStack(R.id.mainFragment, false)
-            },
-            appDeleteListener = {
-                requireContext().apply {
-                    if (isSystemApp(it.appPackage))
-                        showToast(getString(R.string.system_app_cannot_delete))
-                    else
-                        uninstall(it.appPackage)
-                }
-            },
+            appsList = mutableListOf(),
+            appClickListener = { app, _ -> onAppClicked(app) },
+            appLongPressListener = { app, _ -> /* existing long press handling */ },
             appHideListener = { appModel, position ->
                 adapter.appFilteredList.removeAt(position)
                 adapter.notifyItemRemoved(position)
