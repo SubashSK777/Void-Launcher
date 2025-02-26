@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import app.olauncher.MainActivity
 import app.olauncher.R
 import app.olauncher.data.Prefs
-import app.olauncher.ui.MainActivity
 
 class MyAccessibilityService : AccessibilityService() {
 
