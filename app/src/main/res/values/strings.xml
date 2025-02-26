@@ -192,4 +192,5 @@
     <string name="partner_email_hint">Enter accountability partner\'s email address</string>
     <string name="partner_email_saved">Partner email saved successfully</string>
     <string name="partner_email_invalid">Please enter a valid email address</string>
+    <string name="app_unblocked_auto">%s is now unblocked</string>
 </resources>

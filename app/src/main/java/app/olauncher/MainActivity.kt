@@ -42,6 +42,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.BackoffPolicy
 
 class MainActivity : AppCompatActivity() {
 
@@ -97,6 +104,8 @@ class MainActivity : AppCompatActivity() {
             val blockedText = intent.getStringExtra("blocked_text") ?: return
             showBlockedContentDialog(packageName, blockedText)
         }
+
+        scheduleBlockExpiryCheck()
     }
 
     override fun onStart() {
@@ -421,4 +430,11 @@ class MainActivity : AppCompatActivity() {
             .create()
             .show()
     }
+
+    private fun scheduleBlockExpiryCheck() {
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .build()
+
+        val workRequest = PeriodicWorkRequestBuilder<BlockExpiryWorker>(
 }
