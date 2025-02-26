@@ -85,6 +85,11 @@ class MainActivity : AppCompatActivity() {
         setupOrientation()
 
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
+
+        if (intent.getBooleanExtra("show_blocked_dialog", false)) {
+            val packageName = intent.getStringExtra("blocked_package") ?: return
+            showBlockedAppDialog(packageName)
+        }
     }
 
     override fun onStart() {
@@ -311,6 +316,22 @@ class MainActivity : AppCompatActivity() {
                 if (resultCode == Activity.RESULT_OK)
                     resetLauncherViaFakeActivity()
             }
+        }
+    }
+
+    private fun showBlockedAppDialog(packageName: String) {
+        val appName = try {
+            packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
+        } catch (e: Exception) {
+            packageName
+        }
+        
+        showMessageDialog(
+            getString(R.string.app_blocked),
+            getString(R.string.app_is_blocked, appName),
+            getString(R.string.okay)
+        ) {
+            binding.messageLayout.visibility = View.GONE
         }
     }
 }

@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
+import app.olauncher.MainActivity
 import app.olauncher.R
 import app.olauncher.data.Prefs
 import app.olauncher.ui.MainActivity
