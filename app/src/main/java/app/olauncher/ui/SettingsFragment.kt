@@ -656,9 +656,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 val email = input.text.toString().trim()
                 if (email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     prefs.partnerEmail = email
-                    showToast(R.string.email_saved)
+                    requireContext().showToast(R.string.email_saved)
                 } else {
-                    showToast(R.string.invalid_email)
+                    requireContext().showToast(R.string.invalid_email)
                 }
             }
             .setNegativeButton(getString(R.string.cancel), null)

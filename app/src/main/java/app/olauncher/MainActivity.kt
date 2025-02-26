@@ -331,15 +331,19 @@ class MainActivity : AppCompatActivity() {
             .setTitle(getString(R.string.app_blocked))
             .setMessage(getString(R.string.app_is_blocked, appName))
             .setPositiveButton(getString(R.string.request_otp)) { _, _ ->
-                if (OtpHelper.generateAndSendOTP(this, packageName)) {
-                    showOtpInputDialog(packageName)
-                } else {
-                    showMessageDialog(
-                        getString(R.string.error),
-                        getString(R.string.otp_send_failed),
-                        getString(R.string.okay)
-                    ) {
-                        binding.messageLayout.visibility = View.GONE
+                showProgressDialog(getString(R.string.sending_otp))
+                OtpHelper.generateAndSendOTP(this, packageName) { success ->
+                    hideProgressDialog()
+                    if (success) {
+                        showOtpInputDialog(packageName)
+                    } else {
+                        showMessageDialog(
+                            getString(R.string.error),
+                            getString(R.string.otp_send_failed),
+                            getString(R.string.okay)
+                        ) {
+                            binding.messageLayout.visibility = View.GONE
+                        }
                     }
                 }
             }
@@ -349,6 +353,23 @@ class MainActivity : AppCompatActivity() {
             .create()
         
         dialog.show()
+    }
+
+    private fun showProgressDialog(message: String) {
+        val progressDialog = ProgressDialog(this).apply {
+            setMessage(message)
+            setCancelable(false)
+        }
+        progressDialog.show()
+    }
+
+    private fun hideProgressDialog() {
+        try {
+            if (progressDialog.isShowing)
+                progressDialog.dismiss()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun showOtpInputDialog(packageName: String) {

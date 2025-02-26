@@ -8,11 +8,16 @@ import app.olauncher.data.Prefs
 import kotlin.random.Random
 
 object OtpHelper {
-    fun generateAndSendOTP(context: Context, packageName: String): Boolean {
+    private lateinit var emailService: EmailService
+
+    fun generateAndSendOTP(context: Context, packageName: String, callback: (Boolean) -> Unit) {
         val prefs = Prefs(context)
         
         // Check if in lockout period
-        if (isInLockoutPeriod(prefs)) return false
+        if (isInLockoutPeriod(prefs)) {
+            callback(false)
+            return
+        }
         
         // Generate new 6-digit OTP
         val otp = Random.nextInt(100000, 999999).toString()
@@ -33,24 +38,14 @@ object OtpHelper {
 
         // Send email
         val partnerEmail = prefs.partnerEmail
-        if (partnerEmail.isBlank()) return false
-
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(partnerEmail))
-            putExtra(Intent.EXTRA_SUBJECT, "Olauncher App Override OTP")
-            putExtra(Intent.EXTRA_TEXT, """
-                OTP for unblocking $appName: $otp
-                
-                This OTP will expire in 10 minutes.
-                """.trimIndent())
+        if (partnerEmail.isBlank()) {
+            callback(false)
+            return
         }
 
-        try {
-            context.startActivity(Intent.createChooser(intent, "Send OTP"))
-            return true
-        } catch (e: Exception) {
-            return false
+        emailService = EmailService(context)
+        emailService.sendOtpEmail(partnerEmail, otp, appName) { success ->
+            callback(success)
         }
     }
 
