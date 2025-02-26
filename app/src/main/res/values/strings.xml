@@ -193,4 +193,9 @@
     <string name="partner_email_saved">Partner email saved successfully</string>
     <string name="partner_email_invalid">Please enter a valid email address</string>
     <string name="app_unblocked_auto">%s is now unblocked</string>
+    <string name="accountability_partner_email">Accountability Partner Email</string>
+    <string name="otp_sent">OTP sent to accountability partner</string>
+    <string name="otp_expired">OTP has expired</string>
+    <string name="otp_lockout">Too many attempts. Please try again later</string>
+    <string name="accessibility_disclosure">This service is used to monitor app usage and content for blocking purposes</string>
 </resources>
