@@ -106,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         scheduleBlockExpiryCheck()
+        initializeWorkManager()
     }
 
     override fun onStart() {
@@ -439,6 +440,31 @@ class MainActivity : AppCompatActivity() {
         val workRequest = PeriodicWorkRequestBuilder<BlockExpiryWorker>(
             15, TimeUnit.MINUTES,  // Minimum interval allowed by WorkManager
             5, TimeUnit.MINUTES    // Flex interval for battery optimization
+        )
+            .setConstraints(constraints)
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                PeriodicWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+            .build()
+
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniquePeriodicWork(
+                "block_expiry_check",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+            )
+    }
+
+    private fun initializeWorkManager() {
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .build()
+
+        val workRequest = PeriodicWorkRequestBuilder<BlockExpiryWorker>(
+            15, TimeUnit.MINUTES,
+            5, TimeUnit.MINUTES
         )
             .setConstraints(constraints)
             .setBackoffCriteria(
