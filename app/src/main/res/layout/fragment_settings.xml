@@ -1033,13 +1033,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/keyword_filter" />
+                    android:text="@string/app_blocking_section" />
 
+                <!-- Blocked Apps -->
+                <TextView
+                    android:id="@+id/blockedAppsButton"
+                    style="@style/TextSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="8dp"
+                    android:text="@string/manage_blocked_apps" />
+
+                <!-- Keyword Filter -->
                 <LinearLayout
                     android:id="@+id/keywordFilterLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="4dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingHorizontal="8dp">
@@ -1050,13 +1062,25 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/blocked_keywords" />
+                        android:paddingVertical="8dp"
+                        android:text="@string/keyword_filter" />
 
                     <Switch
                         android:id="@+id/keywordFilterSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
+
+                <!-- Partner Email -->
+                <TextView
+                    android:id="@+id/partnerEmailButton"
+                    style="@style/TextSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="8dp"
+                    android:text="@string/accountability_partner_email" />
             </LinearLayout>
 
         </LinearLayout>

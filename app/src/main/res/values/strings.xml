@@ -183,4 +183,13 @@
     <string name="content_blocked_message">Content from %s was blocked because it contains blocked keywords.</string>
     <string name="keyword_filter_section">Content Filtering</string>
     <string name="keyword_filter_description">Block content containing specific keywords</string>
+    <string name="app_blocking_section">App Blocking &amp; Content Filtering</string>
+    <string name="manage_blocked_apps">Manage Blocked Apps</string>
+    <string name="no_blocked_apps">No apps are currently blocked</string>
+    <string name="unblock_app">Unblock App</string>
+    <string name="unblock_confirmation">Are you sure you want to unblock %s?</string>
+    <string name="app_unblocked_manual">App unblocked successfully</string>
+    <string name="partner_email_hint">Enter accountability partner\'s email address</string>
+    <string name="partner_email_saved">Partner email saved successfully</string>
+    <string name="partner_email_invalid">Please enter a valid email address</string>
 </resources>
