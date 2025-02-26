@@ -126,4 +126,8 @@ object Constants {
         const val ONE_DAY = ONE_DAY_IN_MILLIS
         const val ONE_WEEK = ONE_DAY_IN_MILLIS * 7
     }
+
+    const val OTP_EXPIRY_TIME = 600000L // 10 minutes in milliseconds
+    const val OTP_LOCKOUT_DURATION = 1800000L // 30 minutes in milliseconds
+    const val MAX_OTP_ATTEMPTS = 3
 }

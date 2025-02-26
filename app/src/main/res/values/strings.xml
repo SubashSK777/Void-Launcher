@@ -166,4 +166,12 @@
     <string name="one_day">1 day</string>
     <string name="one_week">1 week</string>
     <string name="block_app">Block app</string>
+    <string name="request_otp">Request OTP</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="verify">Verify</string>
+    <string name="cancel">Cancel</string>
+    <string name="invalid_otp">Invalid OTP</string>
+    <string name="otp_send_failed">Failed to send OTP. Please make sure you have set up an accountability partner email in settings.</string>
+    <string name="app_unblocked">App unblocked</string>
+    <string name="error">Error</string>
 </resources>

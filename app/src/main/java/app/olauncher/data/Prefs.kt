@@ -420,6 +420,26 @@ class Prefs(context: Context) {
             prefs.edit().putStringSet(BLOCKED_APPS_TIMESTAMPS, timestampsSet).apply()
         }
 
+    var partnerEmail: String
+        get() = prefs.getString(PARTNER_EMAIL, "") ?: ""
+        set(value) = prefs.edit().putString(PARTNER_EMAIL, value).apply()
+
+    var otpTimestamp: Long
+        get() = prefs.getLong(OTP_TIMESTAMP, 0)
+        set(value) = prefs.edit().putLong(OTP_TIMESTAMP, value).apply()
+
+    var otpValue: String
+        get() = prefs.getString(OTP_VALUE, "") ?: ""
+        set(value) = prefs.edit().putString(OTP_VALUE, value).apply()
+
+    var otpAttempts: Int
+        get() = prefs.getInt(OTP_ATTEMPTS, 0)
+        set(value) = prefs.edit().putInt(OTP_ATTEMPTS, value).apply()
+
+    var otpLockoutTime: Long
+        get() = prefs.getLong(OTP_LOCKOUT_TIME, 0)
+        set(value) = prefs.edit().putLong(OTP_LOCKOUT_TIME, value).apply()
+
     fun getAppName(location: Int): String {
         return when (location) {
             1 -> prefs.getString(APP_NAME_1, "").toString()

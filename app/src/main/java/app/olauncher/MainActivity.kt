@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
@@ -325,13 +326,57 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             packageName
         }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.app_blocked))
+            .setMessage(getString(R.string.app_is_blocked, appName))
+            .setPositiveButton(getString(R.string.request_otp)) { _, _ ->
+                if (OtpHelper.generateAndSendOTP(this, packageName)) {
+                    showOtpInputDialog(packageName)
+                } else {
+                    showMessageDialog(
+                        getString(R.string.error),
+                        getString(R.string.otp_send_failed),
+                        getString(R.string.okay)
+                    ) {
+                        binding.messageLayout.visibility = View.GONE
+                    }
+                }
+            }
+            .setNegativeButton(getString(R.string.okay)) { _, _ ->
+                binding.messageLayout.visibility = View.GONE
+            }
+            .create()
         
-        showMessageDialog(
-            getString(R.string.app_blocked),
-            getString(R.string.app_is_blocked, appName),
-            getString(R.string.okay)
-        ) {
-            binding.messageLayout.visibility = View.GONE
-        }
+        dialog.show()
+    }
+
+    private fun showOtpInputDialog(packageName: String) {
+        val input = EditText(this)
+        input.inputType = InputType.TYPE_CLASS_NUMBER
+        input.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(6))
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.enter_otp))
+            .setView(input)
+            .setPositiveButton(getString(R.string.verify)) { _, _ ->
+                val enteredOTP = input.text.toString()
+                if (OtpHelper.verifyOTP(this, enteredOTP)) {
+                    // Remove app from blocked list
+                    val newBlockedApps = prefs.blockedApps.toMutableSet()
+                    newBlockedApps.remove(packageName)
+                    prefs.blockedApps = newBlockedApps
+                    
+                    val newTimestamps = prefs.blockedAppsTimestamps.toMutableMap()
+                    newTimestamps.remove(packageName)
+                    prefs.blockedAppsTimestamps = newTimestamps
+                    
+                    showToast(R.string.app_unblocked)
+                } else {
+                    showToast(R.string.invalid_otp)
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 }
