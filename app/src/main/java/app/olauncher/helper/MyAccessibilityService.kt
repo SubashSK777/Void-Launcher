@@ -56,18 +56,27 @@ class MyAccessibilityService : AccessibilityService() {
     private fun getTextFromNode(node: AccessibilityNodeInfo): String {
         val text = StringBuilder()
         
-        // Get node's text
-        if (node.text != null) {
-            text.append(node.text)
-        }
-        
-        // Get text from child nodes
-        for (i in 0 until node.childCount) {
-            val child = node.getChild(i)
-            if (child != null) {
-                text.append(" ").append(getTextFromNode(child))
-                child.recycle()
+        try {
+            // Get node's text
+            if (node.text != null) {
+                text.append(node.text).append(" ")
             }
+            
+            // Get content description
+            if (node.contentDescription != null) {
+                text.append(node.contentDescription).append(" ")
+            }
+            
+            // Get text from child nodes
+            for (i in 0 until node.childCount) {
+                val child = node.getChild(i)
+                if (child != null) {
+                    text.append(getTextFromNode(child)).append(" ")
+                    child.recycle()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         
         return text.toString().lowercase()
@@ -75,9 +84,19 @@ class MyAccessibilityService : AccessibilityService() {
 
     private fun containsBlockedKeyword(text: String): Boolean {
         val keywords = prefs.blockedKeywords
+        if (keywords.isEmpty()) return false
+
+        val normalizedText = text.lowercase().trim()
         return keywords.any { keyword ->
-            text.lowercase().contains(keyword.lowercase())
+            val normalizedKeyword = keyword.lowercase().trim()
+            normalizedText.contains(normalizedKeyword)
         }
+    }
+
+    private fun isSystemPackage(packageName: String?): Boolean {
+        return packageName?.startsWith("com.android.") == true ||
+               packageName == "android" ||
+               packageName == "com.google.android.packageinstaller"
     }
 
     private fun showBlockedContentDialog(packageName: String, text: String) {

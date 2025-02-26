@@ -176,9 +176,11 @@
     <string name="error">Error</string>
     <string name="blocked_keywords">Blocked Keywords</string>
     <string name="keyword_filter">Keyword Filter</string>
-    <string name="keyword_filter_hint">Enter keywords to block (one per line)</string>
-    <string name="keyword_filter_message">Content containing these keywords will be blocked. System notifications will not be blocked.</string>
+    <string name="keyword_filter_hint">Enter keywords to block\nOne keyword per line</string>
+    <string name="keyword_filter_message">Content containing these keywords will be blocked. System notifications will not be blocked. Keywords are case-insensitive.</string>
     <string name="keywords_saved">Keywords saved</string>
     <string name="content_blocked">Content Blocked</string>
     <string name="content_blocked_message">Content from %s was blocked because it contains blocked keywords.</string>
+    <string name="keyword_filter_section">Content Filtering</string>
+    <string name="keyword_filter_description">Block content containing specific keywords</string>
 </resources>

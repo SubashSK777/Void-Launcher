@@ -87,6 +87,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateBlockedApps()
         initClickListeners()
         initObservers()
+
+        binding.keywordFilterSwitch.isChecked = prefs.keywordFilterEnabled
     }
 
     override fun onClick(view: View) {
@@ -693,6 +695,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             gravity = Gravity.TOP
             minLines = 3
             maxLines = 8
+            setHorizontallyScrolling(false)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
         }
 
         AlertDialog.Builder(requireContext())
@@ -710,6 +714,10 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun showAccessibilityDialog() {
+        // Implementation of showAccessibilityDialog method
     }
 
     override fun onDestroyView() {
