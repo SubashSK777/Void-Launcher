@@ -8,12 +8,15 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
+import android.text.InputType
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
+import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -639,6 +642,27 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             prefs.proMessageShown = true
             viewModel.showDialog.postValue(Constants.Dialog.PRO_MESSAGE)
         }
+    }
+
+    private fun showPartnerEmailDialog() {
+        val input = EditText(requireContext())
+        input.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        input.setText(prefs.partnerEmail)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.accountability_partner_email))
+            .setView(input)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                val email = input.text.toString().trim()
+                if (email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    prefs.partnerEmail = email
+                    showToast(R.string.email_saved)
+                } else {
+                    showToast(R.string.invalid_email)
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 
     override fun onDestroyView() {
