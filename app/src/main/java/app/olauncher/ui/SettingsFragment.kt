@@ -81,6 +81,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateSwipeApps()
         populateSwipeDownAction()
         populateActionHints()
+        populateBlockedApps()
         initClickListeners()
         initObservers()
     }
@@ -165,6 +166,13 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.github -> requireContext().openUrl(Constants.URL_OLAUNCHER_GITHUB)
             R.id.privacy -> requireContext().openUrl(Constants.URL_OLAUNCHER_PRIVACY)
             R.id.footer -> requireContext().openUrl(Constants.URL_PLAY_STORE_DEV)
+
+            R.id.blockedApps -> {
+                findNavController().navigate(
+                    R.id.action_settingsFragment_to_appListFragment,
+                    bundleOf(Constants.Key.FLAG to Constants.FLAG_BLOCKED_APPS)
+                )
+            }
         }
     }
 
@@ -257,6 +265,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.swipeLeftApp.setOnLongClickListener(this)
         binding.swipeRightApp.setOnLongClickListener(this)
         binding.toggleLock.setOnLongClickListener(this)
+
+        binding.blockedApps.setOnClickListener(this)
     }
 
     private fun initObservers() {
@@ -595,11 +605,10 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             binding.swipeRightApp.setTextColor(requireContext().getColorFromAttr(R.attr.primaryColorTrans50))
     }
 
-//    private fun populateDigitalWellbeing() {
-//        binding.digitalWellbeing.isVisible = requireContext().isPackageInstalled(Constants.DIGITAL_WELLBEING_PACKAGE_NAME).not()
-//                && requireContext().isPackageInstalled(Constants.DIGITAL_WELLBEING_SAMSUNG_PACKAGE_NAME).not()
-//                && prefs.hideDigitalWellbeing.not()
-//    }
+    private fun populateBlockedApps() {
+        val count = prefs.blockedApps.size
+        binding.blockedAppsCount.text = if (count > 0) count.toString() else getString(R.string.none)
+    }
 
     private fun showAppListIfEnabled(flag: Int) {
         if ((flag == Constants.FLAG_SET_SWIPE_LEFT_APP) and !prefs.swipeLeftEnabled) {

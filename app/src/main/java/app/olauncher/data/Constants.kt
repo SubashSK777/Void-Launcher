@@ -116,4 +116,14 @@ object Constants {
     const val DIGITAL_WELLBEING_SAMSUNG_PACKAGE_NAME = "com.samsung.android.forest"
     const val DIGITAL_WELLBEING_SAMSUNG_ACTIVITY = "com.samsung.android.forest.launcher.LauncherActivity"
     const val WALLPAPER_WORKER_NAME = "WALLPAPER_WORKER_NAME"
+
+    const val FLAG_BLOCKED_APPS = 102
+
+    object BlockDuration {
+        const val ONE_HOUR = ONE_HOUR_IN_MILLIS
+        const val FOUR_HOURS = ONE_HOUR_IN_MILLIS * 4
+        const val EIGHT_HOURS = ONE_HOUR_IN_MILLIS * 8
+        const val ONE_DAY = ONE_DAY_IN_MILLIS
+        const val ONE_WEEK = ONE_DAY_IN_MILLIS * 7
+    }
 }

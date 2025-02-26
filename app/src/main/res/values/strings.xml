@@ -155,4 +155,14 @@
     <string name="alignment_changed">Alignment changed ✅</string>
     <string name="home_screen">Home screen</string>
     <string name="hey">Hey</string>
+    <string name="blocked_apps">Blocked apps</string>
+    <string name="none">None</string>
+    <string name="app_blocked">App blocked</string>
+    <string name="app_is_blocked">This app is currently blocked</string>
+    <string name="block_duration">Block duration</string>
+    <string name="one_hour">1 hour</string>
+    <string name="four_hours">4 hours</string>
+    <string name="eight_hours">8 hours</string>
+    <string name="one_day">1 day</string>
+    <string name="one_week">1 week</string>
 </resources>

@@ -161,6 +161,18 @@ class AppDrawerFragment : Fragment() {
             appRenameListener = { appModel, renameLabel ->
                 prefs.setAppRenameLabel(appModel.appPackage, renameLabel)
                 viewModel.getAppList()
+            },
+            appBlockListener = { appModel, duration ->
+                val newBlockedApps = prefs.blockedApps.toMutableSet()
+                newBlockedApps.add(appModel.appPackage)
+                prefs.blockedApps = newBlockedApps
+
+                val newTimestamps = prefs.blockedAppsTimestamps.toMutableMap()
+                newTimestamps[appModel.appPackage] = System.currentTimeMillis() + duration
+                prefs.blockedAppsTimestamps = newTimestamps
+
+                adapter.notifyDataSetChanged()
+                requireContext().showToast(R.string.app_blocked)
             }
         )
 
