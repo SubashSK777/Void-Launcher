@@ -110,8 +110,6 @@
     <string name="swipe_down_for">Swipe down for</string>
     <string name="search">Search</string>
     <string name="notifications">Notifications</string>
-    <string name="accessibility_disclosure">Please turn on or off Olauncher\'s accessibility service in your device\'s settings to enable or disable this feature.
-    \n\nPlease note that this service is only used to let you turn off your device\'s screen using the double tap gesture. Our accessibility service does not collect or share any data.</string>
     <string name="accept">Accept</string>
     <string name="permission">Permission</string>
     <string name="double_tap_lock">Double tap to lock</string>
@@ -197,5 +195,4 @@
     <string name="otp_sent">OTP sent to accountability partner</string>
     <string name="otp_expired">OTP has expired</string>
     <string name="otp_lockout">Too many attempts. Please try again later</string>
-    <string name="accessibility_disclosure">This service is used to monitor app usage and content for blocking purposes</string>
 </resources>
