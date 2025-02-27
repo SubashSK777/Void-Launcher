@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Olauncher</string>
+    <string name="accessibility_disclosure">Accessibility Disclosure</string>
     <string name="github" translatable="false">Github</string>
     <string name="lock_layout_description" translatable="false">lock layout description to be used a unique id to lock screen</string>
     <string name="olauncher_pro" translatable="false">Olauncher Pro</string>
@@ -153,10 +154,10 @@
     <string name="alignment_changed">Alignment changed ✅</string>
     <string name="home_screen">Home screen</string>
     <string name="hey">Hey</string>
-    <string name="blocked_apps">Blocked apps</string>
-    <string name="none">None</string>
-    <string name="app_blocked">App blocked</string>
-    <string name="app_is_blocked">This app is currently blocked</string>
+    <string name="blocked_apps" translatable="false">Blocked apps</string>
+    <string name="none" translatable="false">None</string>
+    <string name="app_blocked" translatable="false">App blocked</string>
+    <string name="app_is_blocked" translatable="false">This app is currently blocked</string>
     <string name="block_duration">Block Duration</string>
     <string name="one_hour">1 Hour</string>
     <string name="four_hours">4 Hours</string>

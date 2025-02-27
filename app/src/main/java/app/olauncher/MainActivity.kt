@@ -336,6 +336,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("StringFormatInvalid")
     private fun showBlockedAppDialog(packageName: String) {
         val appName = try {
             packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
