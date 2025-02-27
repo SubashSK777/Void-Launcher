@@ -23,6 +23,10 @@ import app.olauncher.databinding.AdapterAppDrawerBinding
 import app.olauncher.helper.hideKeyboard
 import app.olauncher.helper.isSystemApp
 import app.olauncher.helper.showKeyboard
+import app.olauncher.ui.AppDrawerFragment
+
+
+import java.text.Normalizer
 
 class AppDrawerAdapter(
     private var flag: Int,
@@ -180,6 +184,10 @@ class AppDrawerAdapter(
                     }
                     true
                 }
+                binding.appBlock.setOnClickListener {
+                    showBlockDurationDialog(root.context, appModel)
+                }
+
                 appRename.setOnClickListener {
                     if (appModel.appPackage.isNotEmpty()) {
                         etAppRename.hint = getAppName(etAppRename.context, appModel.appPackage)
@@ -290,9 +298,11 @@ class AppDrawerAdapter(
                         4 -> Constants.BlockDuration.ONE_WEEK
                         else -> Constants.BlockDuration.ONE_HOUR
                     }
-                    appBlockListener(appModel, duration)
+                    appBlockListener(appModel, duration) //
                 }
+                .setNegativeButton(context.getString(R.string.cancel), null)
                 .show()
         }
+
     }
 }

@@ -53,6 +53,35 @@ import java.util.Locale
 import java.util.Scanner
 import kotlin.math.pow
 import kotlin.math.sqrt
+import android.view.inputmethod.InputMethodManager
+
+fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.showToast(messageResId: Int) {
+    Toast.makeText(this, getString(messageResId), Toast.LENGTH_SHORT).show()
+}
+
+fun Context.openAppInfo(packageName: String) {
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = Uri.parse("package:$packageName")
+    }
+    startActivity(intent)
+}
+
+
+fun Context.hideKeyboard() {
+    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    val windowToken = (this as? android.app.Activity)?.currentFocus?.windowToken
+    windowToken?.let { inputMethodManager.hideSoftInputFromWindow(it, 0) }
+}
+
+fun Context.showKeyboard() {
+    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+}
+
 
 fun Context.showToast(message: String?, duration: Int = Toast.LENGTH_SHORT) {
     if (message.isNullOrBlank()) return

@@ -42,7 +42,7 @@ class EmailService(private val context: Context) {
 
     companion object {
         // Replace these with actual SMTP credentials
-        private const val SMTP_EMAIL = "your-email@gmail.com"
-        private const val SMTP_PASSWORD = "your-app-specific-password"
+        private const val SMTP_EMAIL = "subashsk11831@gmail.com"
+        private const val SMTP_PASSWORD = "wtarataevydkdldb"
     }
 } 

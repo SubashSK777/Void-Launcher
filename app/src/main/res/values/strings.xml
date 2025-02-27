@@ -158,42 +158,46 @@
     <string name="none" translatable="false">None</string>
     <string name="app_blocked" translatable="false">App blocked</string>
     <string name="app_is_blocked" translatable="false">This app is currently blocked</string>
-    <string name="block_duration">Block Duration</string>
-    <string name="one_hour">1 Hour</string>
-    <string name="four_hours">4 Hours</string>
-    <string name="eight_hours">8 Hours</string>
-    <string name="one_day">1 Day</string>
-    <string name="one_week">1 Week</string>
-    <string name="block_app">Block app</string>
-    <string name="request_otp">Request OTP</string>
-    <string name="enter_otp">Enter OTP</string>
-    <string name="verify">Verify</string>
-    <string name="cancel">Cancel</string>
-    <string name="invalid_otp">Invalid OTP</string>
-    <string name="otp_send_failed">Failed to send OTP. Please make sure you have set up an accountability partner email in settings.</string>
-    <string name="app_unblocked">App unblocked</string>
-    <string name="error">Error</string>
-    <string name="blocked_keywords">Blocked Keywords</string>
-    <string name="keyword_filter">Keyword Filter</string>
-    <string name="keyword_filter_hint">Enter keywords to block\nOne keyword per line</string>
-    <string name="keyword_filter_message">Content containing these keywords will be blocked. System notifications will not be blocked. Keywords are case-insensitive.</string>
-    <string name="keywords_saved">Keywords saved</string>
-    <string name="content_blocked">Content Blocked</string>
-    <string name="content_blocked_message">Content from %s was blocked because it contains blocked keywords.</string>
-    <string name="keyword_filter_section">Content Filtering</string>
-    <string name="keyword_filter_description">Block content containing specific keywords</string>
-    <string name="app_blocking_section">App Blocking &amp; Content Filtering</string>
-    <string name="manage_blocked_apps">Manage Blocked Apps</string>
-    <string name="no_blocked_apps">No apps are currently blocked</string>
-    <string name="unblock_app">Unblock App</string>
-    <string name="unblock_confirmation">Are you sure you want to unblock %s?</string>
-    <string name="app_unblocked_manual">App unblocked successfully</string>
-    <string name="partner_email_hint">Enter accountability partner\'s email address</string>
-    <string name="partner_email_saved">Partner email saved successfully</string>
-    <string name="partner_email_invalid">Please enter a valid email address</string>
-    <string name="app_unblocked_auto">%s is now unblocked</string>
-    <string name="accountability_partner_email">Accountability Partner Email</string>
-    <string name="otp_sent">OTP sent to accountability partner</string>
-    <string name="otp_expired">OTP has expired</string>
-    <string name="otp_lockout">Too many attempts. Please try again later</string>
+    <string name="block_duration" translatable="false">Block Duration</string>
+    <string name="one_hour" translatable="false">1 Hour</string>
+    <string name="four_hours" translatable="false">4 Hours</string>
+    <string name="eight_hours" translatable="false">8 Hours</string>
+    <string name="one_day" translatable="false">1 Day</string>
+    <string name="one_week" translatable="false">1 Week</string>
+    <string name="block_app" translatable="false">Block app</string>
+    <string name="block" translatable="false">Block</string>
+
+    <string name="request_otp" translatable="false">Request OTP</string>
+    <string name="enter_otp" translatable="false">Enter OTP</string>
+    <string name="verify" translatable="false">Verify</string>
+    <string name="cancel" translatable="false">Cancel</string>
+    <string name="invalid_otp" translatable="false">Invalid OTP</string>
+    <string name="otp_send_failed" translatable="false">Failed to send OTP. Please make sure you have set up an accountability partner email in settings.</string>
+    <string name="app_unblocked" translatable="false">App unblocked</string>
+    <string name="error" translatable="false">Error</string>
+    <string name="blocked_keywords" translatable="false">Blocked Keywords</string>
+    <string name="keyword_filter" translatable="false">Keyword Filter</string>
+    <string name="keyword_filter_hint" translatable="false">Enter keywords to block\nOne keyword per line</string>
+    <string name="keyword_filter_message" translatable="false">Content containing these keywords will be blocked. System notifications will not be blocked. Keywords are case-insensitive.</string>
+    <string name="keywords_saved" translatable="false">Keywords saved</string>
+    <string name="content_blocked" translatable="false">Content Blocked</string>
+    <string name="content_blocked_message" translatable="false">Content from %s was blocked because it contains blocked keywords.</string>
+    <string name="keyword_filter_section" translatable="false">Content Filtering</string>
+    <string name="keyword_filter_description" translatable="false">Block content containing specific keywords</string>
+    <string name="app_blocking_section"  translatable="false">App Blocking &amp; Content Filtering</string>
+    <string name="manage_blocked_apps" translatable="false">Manage Blocked Apps</string>
+    <string name="no_blocked_apps" translatable="false">No apps are currently blocked</string>
+    <string name="unblock_app" translatable="false">Unblock App</string>
+    <string name="unblock_confirmation" translatable="false">Are you sure you want to unblock %s?</string>
+    <string name="app_unblocked_manual" translatable="false">App unblocked successfully</string>
+    <string name="partner_email_hint" translatable="false">Enter accountability partner\'s email address</string>
+    <string name="partner_email_saved" translatable="false">Partner email saved successfully</string>
+    <string name="partner_email_invalid" translatable="false">Please enter a valid email address</string>
+    <string name="app_unblocked_auto" translatable="false">%s is now unblocked</string>
+    <string name="accountability_partner_email" translatable="false">Accountability Partner Email</string>
+    <string name="otp_sent" translatable="false">OTP sent to accountability partner</string>
+    <string name="otp_expired" translatable="false">OTP has expired</string>
+    <string name="otp_lockout" translatable="false">Too many attempts. Please try again later</string>
+    <string name="sending_otp" translatable="false">Sending OTP...</string>
+
 </resources>

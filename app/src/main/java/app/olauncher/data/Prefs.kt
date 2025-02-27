@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatDelegate
 
+@Suppress("PropertyName")
 class Prefs(context: Context) {
     private val PREFS_FILENAME = "app.olauncher"
 
@@ -91,6 +92,7 @@ class Prefs(context: Context) {
     private val BLOCKED_APPS = "BLOCKED_APPS"
     private val BLOCKED_APPS_TIMESTAMPS = "BLOCKED_APPS_TIMESTAMPS"
 
+    companion object {
     private const val PARTNER_EMAIL = "PARTNER_EMAIL"
     private const val OTP_TIMESTAMP = "OTP_TIMESTAMP"
     private const val OTP_VALUE = "OTP_VALUE"
@@ -99,7 +101,7 @@ class Prefs(context: Context) {
 
     private const val BLOCKED_KEYWORDS = "BLOCKED_KEYWORDS"
     private const val FILTER_ENABLED = "FILTER_ENABLED"
-
+    }
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0);
 
     var firstOpen: Boolean

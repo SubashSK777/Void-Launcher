@@ -1,5 +1,6 @@
 package app.olauncher.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import app.olauncher.MainViewModel
 import app.olauncher.R
+import app.olauncher.data.AppModel
 import app.olauncher.data.Constants
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.FragmentAppDrawerBinding
@@ -104,11 +106,18 @@ class AppDrawerFragment : Fragment() {
         })
     }
 
+    private fun onAppClicked(appModel: AppModel) {
+        requireContext().startActivity(requireContext().packageManager.getLaunchIntentForPackage(appModel.appPackage))
+    }
+
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun initAdapter() {
         adapter = AppDrawerAdapter(
-            appsList = mutableListOf(),
+//            appsList = mutableListOf(),
             appClickListener = { app, _ -> onAppClicked(app) },
-            appLongPressListener = { app, _ -> /* existing long press handling */ },
+            appInfoListener = { app -> requireContext().openAppInfo(app.appPackage) },
+            appDeleteListener = { app -> requireContext().uninstall(app.appPackage) },
             appHideListener = { appModel, position ->
                 adapter.appFilteredList.removeAt(position)
                 adapter.notifyItemRemoved(position)
@@ -149,7 +158,9 @@ class AppDrawerFragment : Fragment() {
 
                 adapter.notifyDataSetChanged()
                 requireContext().showToast(R.string.app_blocked)
-            }
+            },
+            flag = flag,
+            appLabelGravity = prefs.appLabelAlignment
         )
 
         linearLayoutManager = object : LinearLayoutManager(requireContext()) {

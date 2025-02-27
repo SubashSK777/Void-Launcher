@@ -2,6 +2,7 @@ package app.olauncher
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -9,8 +10,11 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.InputFilter
+import android.text.InputType
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -49,6 +53,9 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.BackoffPolicy
+import androidx.work.WorkRequest
+import app.olauncher.helper.BlockExpiryWorker
+import app.olauncher.helper.OtpHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -337,7 +344,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("StringFormatInvalid")
-    private fun showBlockedAppDialog(packageName: String) {
+    private  fun showBlockedAppDialog(packageName: String) {
         val appName = try {
             packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
         } catch (e: Exception) {
@@ -349,21 +356,25 @@ class MainActivity : AppCompatActivity() {
             .setMessage(getString(R.string.app_is_blocked, appName))
             .setPositiveButton(getString(R.string.request_otp)) { _, _ ->
                 showProgressDialog(getString(R.string.sending_otp))
-                OtpHelper.generateAndSendOTP(this, packageName) { success ->
-                    hideProgressDialog()
-                    if (success) {
-                        showOtpInputDialog(packageName)
-                    } else {
-                        showMessageDialog(
-                            getString(R.string.error),
-                            getString(R.string.otp_send_failed),
-                            getString(R.string.okay)
-                        ) {
-                            binding.messageLayout.visibility = View.GONE
+               lifecycleScope.launch {
+                    OtpHelper.generateAndSendOTP(this@MainActivity, packageName) { success ->
+                            hideProgressDialog()
+                            if (success) {
+                                showOtpInputDialog(packageName)
+                            } else {
+                                showMessageDialog(
+                                    getString(R.string.error),
+                                    getString(R.string.otp_send_failed),
+                                    getString(R.string.okay)
+                                ) {
+                                    binding.messageLayout.visibility = View.GONE
+                                }
+                            }
                         }
                     }
                 }
-            }
+
+
             .setNegativeButton(getString(R.string.okay)) { _, _ ->
                 binding.messageLayout.visibility = View.GONE
             }
@@ -372,22 +383,22 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private lateinit var progressDialog: AlertDialog
+
     private fun showProgressDialog(message: String) {
-        val progressDialog = ProgressDialog(this).apply {
-            setMessage(message)
-            setCancelable(false)
-        }
+        progressDialog = AlertDialog.Builder(this)
+            .setMessage(message)
+            .setCancelable(false)
+            .create()
         progressDialog.show()
     }
 
     private fun hideProgressDialog() {
-        try {
-            if (progressDialog.isShowing)
-                progressDialog.dismiss()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (::progressDialog.isInitialized && progressDialog.isShowing) {
+            progressDialog.dismiss()
         }
     }
+
 
     private fun showOtpInputDialog(packageName: String) {
         val input = EditText(this)
@@ -445,7 +456,7 @@ class MainActivity : AppCompatActivity() {
             .setConstraints(constraints)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                PeriodicWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .build()
@@ -470,7 +481,7 @@ class MainActivity : AppCompatActivity() {
             .setConstraints(constraints)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                PeriodicWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .build()

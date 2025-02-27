@@ -1,33 +1,36 @@
 package app.olauncher.helper
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import app.olauncher.data.Constants
 import app.olauncher.data.Prefs
+import java.security.KeyStore.TrustedCertificateEntry
 import kotlin.random.Random
 
 object OtpHelper {
+    @SuppressLint("StaticFieldLeak")
     private lateinit var emailService: EmailService
 
-    fun generateAndSendOTP(context: Context, packageName: String, callback: (Boolean) -> Unit) {
+    suspend fun generateAndSendOTP(context: Context, packageName: String, callback: (Boolean) -> Unit) {
         val prefs = Prefs(context)
-        
+
         // Check if in lockout period
         if (isInLockoutPeriod(prefs)) {
             callback(false)
             return
         }
-        
+
         // Generate new 6-digit OTP
         val otp = Random.nextInt(100000, 999999).toString()
         val currentTime = System.currentTimeMillis()
-        
+
         // Save OTP details
         prefs.otpValue = otp
         prefs.otpTimestamp = currentTime
         prefs.otpAttempts = 0
-        
+
         // Get app name
         val appName = try {
             context.packageManager.getApplicationInfo(packageName, 0)
@@ -43,11 +46,16 @@ object OtpHelper {
             return
         }
 
-        emailService = EmailService(context)
-        emailService.sendOtpEmail(partnerEmail, otp, appName) { success ->
-            callback(success)
+        try {
+            emailService.sendOtpEmail(partnerEmail, otp, appName)
+            callback(true) // If email is sent successfully
+        } catch (e: Exception) {
+            e.printStackTrace()
+            callback(false) // If email sending fails
         }
-    }
+
+        }
+
 
     fun verifyOTP(context: Context, enteredOTP: String): Boolean {
         val prefs = Prefs(context)
