@@ -14,6 +14,7 @@ import android.text.InputFilter
 import android.text.InputType
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import android.view.accessibility.AccessibilityEvent
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -500,13 +501,15 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
     private lateinit var prefs: Prefs
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
+
     override fun onServiceConnected() {
+        super.onServiceConnected()
         prefs = Prefs(applicationContext)
         prefs.lockModeOn = true
-        super.onServiceConnected()
+
     }
 
     @androidx.annotation.RequiresApi(Build.VERSION_CODES.P)
@@ -514,8 +517,8 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
         if (!prefs.keywordFilterEnabled) return
 
         when (event.eventType) {
-            android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-            android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
                 try {
                     val source = event.source ?: return
                     val text = getTextFromNode(source)
@@ -535,6 +538,106 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
                     e.printStackTrace()
                 }
             }
+
+            AccessibilityEvent.TYPE_ANNOUNCEMENT -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_GESTURE_DETECTION_END -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_GESTURE_DETECTION_START -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_SPEECH_STATE_CHANGE -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_TOUCH_INTERACTION_END -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_TOUCH_INTERACTION_START -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_CLICKED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_FOCUSED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_HOVER_ENTER -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_HOVER_EXIT -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_LONG_CLICKED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_SELECTED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_TARGETED_BY_SCROLL -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY -> {
+                TODO()
+            }
+
+            AccessibilityEvent.TYPE_WINDOWS_CHANGED -> {
+                TODO()
+            }
         }
     }
 
@@ -542,22 +645,12 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
         val text = StringBuilder()
 
         try {
-            // Get node's text
-            if (node.text != null) {
-                text.append(node.text).append(" ")
-            }
+            text.append(node.text ?: "").append(" ")
+            text.append(node.contentDescription ?: "").append(" ")
 
-            // Get content description
-            if (node.contentDescription != null) {
-                text.append(node.contentDescription).append(" ")
-            }
-
-            // Get text from child nodes
             for (i in 0 until node.childCount) {
-                val child = node.getChild(i)
-                if (child != null) {
+                node.getChild(i)?.let { child ->
                     text.append(getTextFromNode(child)).append(" ")
-                    child.recycle()
                 }
             }
         } catch (e: Exception) {
@@ -566,6 +659,7 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
 
         return text.toString().lowercase()
     }
+
 
     private fun containsBlockedKeyword(text: String): Boolean {
         val keywords = prefs.blockedKeywords
@@ -586,7 +680,7 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
 
     private fun showBlockedContentDialog(packageName: String, text: String) {
         val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("show_blocked_content_dialog", true)
             putExtra("blocked_package", packageName)
             putExtra("blocked_text", text)
@@ -595,8 +689,9 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
     }
 
     override fun onInterrupt() {
-
+        android.util.Log.e("MyAccessibilityService", "Service interrupted")
     }
+
 
     private fun isAppBlocked(packageName: String): Boolean {
         val blockedApps = prefs.blockedApps

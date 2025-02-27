@@ -60,6 +60,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prefs = Prefs(requireContext())
@@ -216,11 +217,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
             R.id.keywordFilterSwitch -> {
                 if (!isAccessServiceEnabled(requireContext())) {
-                    binding.keywordFilterSwitch.isChecked = false
+                    binding.keywordFilterSwitch?.isChecked = false
                     showAccessibilityDialog()
                     return@setOnClickListener
                 }
-                prefs.keywordFilterEnabled = binding.keywordFilterSwitch.isChecked
+                prefs.keywordFilterEnabled = binding.keywordFilterSwitch?.isChecked == true
             }
         }
     }
@@ -317,8 +318,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
         binding.blockedApps.setOnClickListener(this)
 
-        binding.keywordFilter.setOnClickListener(this)
-        binding.keywordFilterSwitch.setOnClickListener(this)
+        binding.keywordFilter?.setOnClickListener(this)
+        binding.keywordFilterSwitch?.setOnClickListener(this)
     }
 
     private fun initObservers() {
@@ -376,6 +377,12 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             binding.statusBar.text = getString(R.string.off)
         }
     }
+    private fun unblockApp(packageName: String) {
+        val newBlockedApps = prefs.blockedApps.toMutableSet()
+        newBlockedApps.remove(packageName)
+        prefs.blockedApps = newBlockedApps
+    }
+
 
     private fun toggleDateTime(selected: Int) {
         prefs.dateTimeVisibility = selected
