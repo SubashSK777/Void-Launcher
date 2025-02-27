@@ -88,7 +88,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         initClickListeners()
         initObservers()
 
-        binding.keywordFilterSwitch.isChecked = prefs.keywordFilterEnabled
+        binding.keywordFilterSwitch!!.isChecked = prefs.keywordFilterEnabled
 
         binding.blockedAppsButton.setOnClickListener {
             showBlockedAppsDialog()
