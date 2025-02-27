@@ -1,5 +1,7 @@
+
 package app.olauncher.ui
 
+import android.annotation.SuppressLint
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
@@ -90,11 +92,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
         binding.keywordFilterSwitch!!.isChecked = prefs.keywordFilterEnabled
 
-        binding.blockedAppsButton.setOnClickListener {
+        binding.blockedAppsButton?.setOnClickListener {
             showBlockedAppsDialog()
         }
 
-        binding.keywordFilter.setOnClickListener {
+        binding.keywordFilter?.setOnClickListener {
             if (!isAccessServiceEnabled(requireContext())) {
                 showAccessibilityDialog()
                 return@setOnClickListener
@@ -102,16 +104,16 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             showKeywordFilterDialog()
         }
 
-        binding.keywordFilterSwitch.setOnClickListener {
+        binding.keywordFilterSwitch?.setOnClickListener {
             if (!isAccessServiceEnabled(requireContext())) {
-                binding.keywordFilterSwitch.isChecked = false
+                binding.keywordFilterSwitch?.isChecked = false
                 showAccessibilityDialog()
                 return@setOnClickListener
             }
-            prefs.keywordFilterEnabled = binding.keywordFilterSwitch.isChecked
+            prefs.keywordFilterEnabled = binding.keywordFilterSwitch!!.isChecked
         }
 
-        binding.partnerEmailButton.setOnClickListener {
+        binding.partnerEmailButton?.setOnClickListener {
             showPartnerEmailDialog()
         }
     }
@@ -509,6 +511,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             requireContext().showToast(getString(R.string.olauncher_is_not_default_launcher), Toast.LENGTH_LONG)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateHomeAppsNum(num: Int) {
         binding.homeAppsNum.text = num.toString()
         binding.appsNumSelectLayout.visibility = View.GONE

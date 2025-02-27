@@ -114,7 +114,6 @@ class AppDrawerFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun initAdapter() {
         adapter = AppDrawerAdapter(
-//            appsList = mutableListOf(),
             appClickListener = { app, _ -> onAppClicked(app) },
             appInfoListener = { app -> requireContext().openAppInfo(app.appPackage) },
             appDeleteListener = { app -> requireContext().uninstall(app.appPackage) },

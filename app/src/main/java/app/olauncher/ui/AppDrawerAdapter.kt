@@ -1,5 +1,6 @@
 package app.olauncher.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.UserHandle
 import android.text.Editable
@@ -150,6 +151,7 @@ class AppDrawerAdapter(
 
     class ViewHolder(private val binding: AdapterAppDrawerBinding) : RecyclerView.ViewHolder(binding.root) {
 
+
         fun bind(
             flag: Int,
             appLabelGravity: Int,
@@ -184,8 +186,8 @@ class AppDrawerAdapter(
                     }
                     true
                 }
-                binding.appBlock.setOnClickListener {
-                    showBlockDurationDialog(root.context, appModel)
+                appBlock.setOnClickListener {
+                    showBlockDurationDialog(root.context, appModel, appBlockListener)
                 }
 
                 appRename.setOnClickListener {
@@ -267,7 +269,7 @@ class AppDrawerAdapter(
                 }
                 appHide.setOnClickListener { appHideListener(appModel, bindingAdapterPosition) }
                 appBlock.setOnClickListener {
-                    showBlockDurationDialog(root.context, appModel)
+                    showBlockDurationDialog(root.context, appModel, appBlockListener)
                 }
             }
 
@@ -278,7 +280,7 @@ class AppDrawerAdapter(
             ).toString()
         }
 
-        private fun showBlockDurationDialog(context: Context, appModel: AppModel) {
+        private fun showBlockDurationDialog(context: Context, appModel: AppModel, appBlockListener: (AppModel, Long) -> Unit) {
             val durations = arrayOf(
                 context.getString(R.string.one_hour),
                 context.getString(R.string.four_hours),
