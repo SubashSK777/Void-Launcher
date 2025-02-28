@@ -432,9 +432,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
     private fun toggleAccessibilityVisibility(show: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-            binding.notWorking.visibility = View.VISIBLE
+            binding.notWorking!!.visibility = View.VISIBLE
         if (isAccessServiceEnabled(requireContext()))
-            binding.actionAccessibility.text = getString(R.string.disable)
+            binding.actionAccessibility!!.text = getString(R.string.disable)
         binding.accessibilityLayout.isVisible = show
         binding.scrollView.animateAlpha(if (show) 0.5f else 1f)
     }
