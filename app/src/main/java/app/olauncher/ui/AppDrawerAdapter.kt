@@ -13,6 +13,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -189,6 +190,7 @@ class AppDrawerAdapter(
                 appBlock.setOnClickListener {
                     showBlockDurationDialog(root.context, appModel, appBlockListener)
                 }
+//                appBlock.setBackgroundColor(ContextCompat.getColor(root.context, R.color.))
 
                 appRename.setOnClickListener {
                     if (appModel.appPackage.isNotEmpty()) {
