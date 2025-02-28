@@ -18,6 +18,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
 import app.olauncher.BuildConfig
 import app.olauncher.R
 import app.olauncher.data.Constants
@@ -57,7 +58,10 @@ fun Context.resetDefaultLauncher() {
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
             PackageManager.DONT_KILL_APP
         )
-        val selector = Intent(Intent.ACTION_MAIN)
+        val selector = Intent().setClassName(this,
+            "app.olauncher.helper.FakeHomeActivity"
+        )
+
         selector.addCategory(Intent.CATEGORY_HOME)
         startActivity(selector)
         packageManager.setComponentEnabledSetting(

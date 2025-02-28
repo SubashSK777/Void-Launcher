@@ -13,6 +13,13 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    packagingOptions {
+        pickFirst 'META-INF/NOTICE.md'
+        pickFirst 'META-INF/LICENSE.md'
+    }
+
+
+
     defaultConfig {
         applicationId "app.olauncher"
         minSdkVersion 24

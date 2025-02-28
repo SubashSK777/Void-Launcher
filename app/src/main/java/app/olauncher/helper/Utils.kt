@@ -423,7 +423,12 @@ fun openCalendar(context: Context) {
         context.startActivity(Intent(Intent.ACTION_VIEW, calendarUri))
     } catch (e: Exception) {
         try {
-            val intent = Intent(Intent.ACTION_MAIN)
+
+            val intent = Intent().setClassName(
+                "app.olauncher.helper",
+                "app.olauncher.helper.FakeHomeActivity"
+            )
+
             intent.addCategory(Intent.CATEGORY_APP_CALENDAR)
             context.startActivity(intent)
         } catch (e: Exception) {

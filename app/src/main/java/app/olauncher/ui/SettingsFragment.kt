@@ -91,6 +91,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         initClickListeners()
         initObservers()
 
+
         binding.keywordFilterSwitch!!.isChecked = prefs.keywordFilterEnabled
 
         binding.blockedAppsButton?.setOnClickListener {
@@ -117,6 +118,23 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.partnerEmailButton?.setOnClickListener {
             showPartnerEmailDialog()
         }
+        binding.keywordFilter?.setOnClickListener {
+            if (!isAccessServiceEnabled(requireContext())) {
+                showAccessibilityDialog()
+                return@setOnClickListener
+            }
+            showKeywordFilterDialog()
+        }
+
+        binding.keywordFilterSwitch?.setOnClickListener {
+            if (!isAccessServiceEnabled(requireContext())) {
+                binding.keywordFilterSwitch?.isChecked = false
+                showAccessibilityDialog()
+                return@setOnClickListener
+            }
+            prefs.keywordFilterEnabled = binding.keywordFilterSwitch?.isChecked == true
+        }
+
     }
 
     override fun onClick(view: View) {
@@ -200,29 +218,15 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.privacy -> requireContext().openUrl(Constants.URL_OLAUNCHER_PRIVACY)
             R.id.footer -> requireContext().openUrl(Constants.URL_PLAY_STORE_DEV)
 
-            R.id.blockedApps -> {
+
+            R.id.blockedAppsButton -> {
                 findNavController().navigate(
                     R.id.action_settingsFragment_to_appListFragment,
                     bundleOf(Constants.Key.FLAG to Constants.FLAG_BLOCKED_APPS)
                 )
             }
 
-            R.id.keywordFilter -> {
-                if (!isAccessServiceEnabled(requireContext())) {
-                    showAccessibilityDialog()
-                    return@setOnClickListener
-                }
-                showKeywordFilterDialog()
-            }
 
-            R.id.keywordFilterSwitch -> {
-                if (!isAccessServiceEnabled(requireContext())) {
-                    binding.keywordFilterSwitch?.isChecked = false
-                    showAccessibilityDialog()
-                    return@setOnClickListener
-                }
-                prefs.keywordFilterEnabled = binding.keywordFilterSwitch?.isChecked == true
-            }
         }
     }
 
@@ -316,11 +320,16 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.swipeRightApp.setOnLongClickListener(this)
         binding.toggleLock.setOnLongClickListener(this)
 
-        binding.blockedApps.setOnClickListener(this)
+        binding.blockedAppsButton?.setOnClickListener(this)
 
         binding.keywordFilter?.setOnClickListener(this)
         binding.keywordFilterSwitch?.setOnClickListener(this)
     }
+
+    private fun saveBlockedKeywords(keywords: Set<String>) {
+        prefs.blockedKeywords = keywords
+    }
+
 
     private fun initObservers() {
         if (prefs.firstSettingsOpen) {
@@ -667,8 +676,10 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
     private fun populateBlockedApps() {
         val count = prefs.blockedApps.size
-        binding.blockedAppsCount.text = if (count > 0) count.toString() else getString(R.string.none)
+        binding.blockedAppsButton?.text = getString(R.string.blocked_apps_count, prefs.blockedApps.size)
+
     }
+
 
     private fun showAppListIfEnabled(flag: Int) {
         if ((flag == Constants.FLAG_SET_SWIPE_LEFT_APP) and !prefs.swipeLeftEnabled) {
@@ -768,8 +779,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.accountability_partner_email))
             .setView(input)
-            .setPositiveButton(getString(R.string.save)) { _, _ ->
-                val email = input.text.toString().trim()
+            .setPositiveButton(requireContext().getString(R.string.save)) { _, _ ->
+        val email = input.text.toString().trim()
                 if (email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     prefs.partnerEmail = email
                     requireContext().showToast(R.string.partner_email_saved)
@@ -797,7 +808,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             .setTitle(getString(R.string.blocked_keywords))
             .setMessage(getString(R.string.keyword_filter_message))
             .setView(input)
-            .setPositiveButton(getString(R.string.save)) { _, _ ->
+            .setPositiveButton(requireContext().getString(R.string.save)) { _, _ ->
                 val keywords = input.text.toString()
                     .split("\n")
                     .map { it.trim() }
@@ -806,13 +817,21 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 prefs.blockedKeywords = keywords
                 requireContext().showToast(R.string.keywords_saved)
             }
+            .setNegativeButton(requireContext().getString(R.string.cancel), null)
+            .show()
+    }
+    private fun showAccessibilityDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.accessibility_permission))
+            .setMessage(getString(R.string.enable_accessibility_service_message))
+            .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
+                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                startActivity(intent)
+            }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
-    private fun showAccessibilityDialog() {
-        // Implementation of showAccessibilityDialog method
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
