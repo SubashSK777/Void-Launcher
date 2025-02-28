@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatDelegate
 
-@Suppress("PropertyName")
 class Prefs(context: Context) {
     private val PREFS_FILENAME = "app.olauncher"
 
@@ -409,7 +408,7 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putString(CALENDAR_APP_CLASS_NAME, value).apply()
 
     var blockedApps: Set<String>
-        get() = prefs.getStringSet(BLOCKED_APPS, setOf()) ?: setOf()
+        get() = prefs.getStringSet(BLOCKED_APPS, emptySet()) ?: emptySet()
         set(value) = prefs.edit().putStringSet(BLOCKED_APPS, value).apply()
 
     var blockedAppsTimestamps: Map<String, Long>

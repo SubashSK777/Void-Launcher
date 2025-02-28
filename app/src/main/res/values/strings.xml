@@ -121,6 +121,8 @@
     <string name="delete">Delete</string>
     <string name="text_size">Text size</string>
     <string name="enabled">Enabled</string>
+    <string name="save" translatable="false">Save</string>
+
     <string name="disabled">Disabled</string>
     <string name="please_turn_on_double_tap_to_unlock">Please turn on double tap to lock</string>
     <string name="launcher_failed_to_lock_device">Olauncher failed to lock device.\nPlease check your app settings.</string>
@@ -154,6 +156,15 @@
     <string name="alignment_changed">Alignment changed ✅</string>
     <string name="home_screen">Home screen</string>
     <string name="hey">Hey</string>
+    <string name="unblock" translatable="false">Unblock</string>
+
+    <string name="accessibility_permission" translatable="false">Enable Accessibility Service</string>
+    <string name="enable_accessibility_service_message" translatable="false">
+        To use this feature, please enable Accessibility Service in settings.
+    </string>
+    <string name="open_settings" translatable="false">Open Settings</string>
+
+
     <string name="blocked_apps" translatable="false">Blocked apps</string>
     <string name="none" translatable="false">None</string>
     <string name="app_blocked" translatable="false">App blocked</string>
@@ -167,6 +178,8 @@
     <string name="block_app" translatable="false">Block app</string>
     <string name="block" translatable="false">Block</string>
 
+
+    <string name="blocked_apps_count" translatable="false">Blocked Apps: %d</string>
     <string name="request_otp" translatable="false">Request OTP</string>
     <string name="enter_otp" translatable="false">Enter OTP</string>
     <string name="verify" translatable="false">Verify</string>

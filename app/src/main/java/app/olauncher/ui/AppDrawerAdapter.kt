@@ -1,5 +1,6 @@
 package app.olauncher.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.UserHandle
 import android.text.Editable
@@ -12,6 +13,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -150,6 +152,7 @@ class AppDrawerAdapter(
 
     class ViewHolder(private val binding: AdapterAppDrawerBinding) : RecyclerView.ViewHolder(binding.root) {
 
+
         fun bind(
             flag: Int,
             appLabelGravity: Int,
@@ -184,9 +187,10 @@ class AppDrawerAdapter(
                     }
                     true
                 }
-                binding.appBlock.setOnClickListener {
-                    showBlockDurationDialog(root.context, appModel)
+                appBlock.setOnClickListener {
+                    showBlockDurationDialog(root.context, appModel, appBlockListener)
                 }
+//                appBlock.setBackgroundColor(ContextCompat.getColor(root.context, R.color.))
 
                 appRename.setOnClickListener {
                     if (appModel.appPackage.isNotEmpty()) {
@@ -267,7 +271,7 @@ class AppDrawerAdapter(
                 }
                 appHide.setOnClickListener { appHideListener(appModel, bindingAdapterPosition) }
                 appBlock.setOnClickListener {
-                    showBlockDurationDialog(root.context, appModel)
+                    showBlockDurationDialog(root.context, appModel, appBlockListener)
                 }
             }
 
@@ -278,7 +282,7 @@ class AppDrawerAdapter(
             ).toString()
         }
 
-        private fun showBlockDurationDialog(context: Context, appModel: AppModel) {
+        private fun showBlockDurationDialog(context: Context, appModel: AppModel, appBlockListener: (AppModel, Long) -> Unit) {
             val durations = arrayOf(
                 context.getString(R.string.one_hour),
                 context.getString(R.string.four_hours),

@@ -39,7 +39,6 @@ class AppDrawerFragment : Fragment() {
 
     private var flag = Constants.FLAG_LAUNCH_APP
     private var canRename = false
-
     private val viewModel: MainViewModel by activityViewModels()
     private var _binding: FragmentAppDrawerBinding? = null
     private val binding get() = _binding!!
@@ -114,7 +113,6 @@ class AppDrawerFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun initAdapter() {
         adapter = AppDrawerAdapter(
-//            appsList = mutableListOf(),
             appClickListener = { app, _ -> onAppClicked(app) },
             appInfoListener = { app -> requireContext().openAppInfo(app.appPackage) },
             appDeleteListener = { app -> requireContext().uninstall(app.appPackage) },

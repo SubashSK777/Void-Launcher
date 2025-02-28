@@ -1046,6 +1046,15 @@
                     android:paddingVertical="8dp"
                     android:text="@string/manage_blocked_apps" />
 
+                <TextView
+                    android:id="@+id/blockedAppsCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Blocked Apps: 0"
+                    android:textSize="16sp"
+                    android:layout_marginTop="10dp"/>
+
+
                 <!-- Keyword Filter -->
                 <LinearLayout
                     android:id="@+id/keywordFilterLayout"
@@ -1068,7 +1077,8 @@
                     <Switch
                         android:id="@+id/keywordFilterSwitch"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="Enable Keyword Filter"/>
                 </LinearLayout>
 
                 <!-- Partner Email -->

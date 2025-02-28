@@ -13,6 +13,13 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    packagingOptions {
+        pickFirst 'META-INF/NOTICE.md'
+        pickFirst 'META-INF/LICENSE.md'
+    }
+
+
+
     defaultConfig {
         applicationId "app.olauncher"
         minSdkVersion 24
@@ -64,6 +71,6 @@ dependencies {
     //Material dependency
     implementation libs.material
 
-    implementation 'com.sun.mail:android-mail:1.6.7'
-    implementation 'com.sun.mail:android-activation:1.6.7'
+    implementation libs.android.mail
+    implementation libs.android.activation
 }

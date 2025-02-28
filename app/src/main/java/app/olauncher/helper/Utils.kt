@@ -54,6 +54,7 @@ import java.util.Scanner
 import kotlin.math.pow
 import kotlin.math.sqrt
 import android.view.inputmethod.InputMethodManager
+import app.olauncher.MyAccessibilityService
 
 fun Context.showToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -422,7 +423,12 @@ fun openCalendar(context: Context) {
         context.startActivity(Intent(Intent.ACTION_VIEW, calendarUri))
     } catch (e: Exception) {
         try {
-            val intent = Intent(Intent.ACTION_MAIN)
+
+            val intent = Intent().setClassName(
+                "app.olauncher.helper",
+                "app.olauncher.helper.FakeHomeActivity"
+            )
+
             intent.addCategory(Intent.CATEGORY_APP_CALENDAR)
             context.startActivity(intent)
         } catch (e: Exception) {
@@ -439,7 +445,7 @@ fun isAccessServiceEnabled(context: Context): Boolean {
     }
     if (enabled == 1) {
         val enabledServicesString: String? = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-        return enabledServicesString?.contains(context.packageName + "/" + MyAccessibilityService::class.java.name) ?: false
+        return enabledServicesString?.contains(context.packageName + "/" + MyAccessibilityService::class.java.name) == true
     }
     return false
 }
