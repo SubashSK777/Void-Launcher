@@ -213,4 +213,11 @@
     <string name="otp_lockout" translatable="false">Too many attempts. Please try again later</string>
     <string name="sending_otp" translatable="false">Sending OTP...</string>
 
+    <!-- Common Actions -->
+    <string name="save" translatable="false">Save</string>
+    <string name="cancel" translatable="false">Cancel</string>
+    <string name="okay" translatable="false">Okay</string>
+    <string name="enable" translatable="false">Enable</string>
+    <string name="close" translatable="false">Close</string>
+
 </resources>
