@@ -130,6 +130,7 @@ object Constants {
     const val FLAG_BLOCKED_APPS = 102
 
     object BlockDuration {
+        const val ONE_MINUTE = 60 * 1000L
         const val ONE_HOUR = 60 * 60 * 1000L
         const val FOUR_HOURS = 4 * ONE_HOUR
         const val EIGHT_HOURS = 8 * ONE_HOUR

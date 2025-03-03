@@ -9,13 +9,17 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import android.view.accessibility.AccessibilityEvent
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -510,136 +514,49 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
         prefs = Prefs(applicationContext)
         prefs.lockModeOn = true
 
+        android.util.Log.d("MyAccessibilityService", "Blocked Apps List: ${prefs.blockedApps}")
+        android.util.Log.d("MyAccessibilityService", "Blocked Apps Timestamps: ${prefs.blockedAppsTimestamps}")
+    }
+
+    private fun showBlockedAppToast(packageName: String) {
+        val appName = getAppName(packageName)
+        val message = "$appName is blocked!"
+        android.util.Log.d("MyAccessibilityService", "Showing toast: $message")
+
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        }
     }
 
     @androidx.annotation.RequiresApi(Build.VERSION_CODES.P)
-    override fun onAccessibilityEvent(event: android.view.accessibility.AccessibilityEvent) {
+    override fun onAccessibilityEvent(event: AccessibilityEvent) {
         if (!prefs.keywordFilterEnabled) return
 
         when (event.eventType) {
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
-                try {
-                    val source = event.source ?: return
-                    val text = getTextFromNode(source)
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
+                val packageName = event.packageName?.toString() ?: return
 
-                    // Skip system UI and launcher
-                    if (event.packageName == "com.android.systemui" ||
-                        event.packageName == "app.olauncher") return
+                // Log the detected app opening
+                Log.d("MyAccessibilityService", "Detected app opened: $packageName")
 
-                    if (containsBlockedKeyword(text)) {
-                        // Don't block system notifications
-                        if (event.packageName == "android") return
+                // Check if the app is blocked
+                if (isAppBlocked(packageName)) {
+                    Log.d("MyAccessibilityService", "Blocking app: $packageName")
 
-                        performGlobalAction(GLOBAL_ACTION_HOME)
-                        showBlockedContentDialog(event.packageName.toString(), text)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                    // Send user back to home screen
+                    performGlobalAction(GLOBAL_ACTION_HOME)
+
+                    // Notify user
+                    applicationContext.showToast("Access to $packageName is blocked.")
+                } else {
+                    Log.d("MyAccessibilityService", "App $packageName is not blocked.")
                 }
-            }
-
-            AccessibilityEvent.TYPE_ANNOUNCEMENT -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_GESTURE_DETECTION_END -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_GESTURE_DETECTION_START -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_SPEECH_STATE_CHANGE -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_TOUCH_INTERACTION_END -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_TOUCH_INTERACTION_START -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_CLICKED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_FOCUSED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_HOVER_ENTER -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_HOVER_EXIT -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_LONG_CLICKED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_SELECTED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_TARGETED_BY_SCROLL -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY -> {
-                TODO()
-            }
-
-            AccessibilityEvent.TYPE_WINDOWS_CHANGED -> {
-                TODO()
             }
         }
     }
+
+
 
     private fun getTextFromNode(node: android.view.accessibility.AccessibilityNodeInfo): String {
         val text = StringBuilder()
@@ -695,13 +612,22 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
 
     private fun isAppBlocked(packageName: String): Boolean {
         val blockedApps = prefs.blockedApps
-        if (!blockedApps.contains(packageName)) return false
-
         val timestamps = prefs.blockedAppsTimestamps
+
+        Log.d("MyAccessibilityService", "Checking block status for: $packageName")
+
+        if (!blockedApps.contains(packageName)) {
+            Log.d("MyAccessibilityService", "$packageName is NOT in the blocked list.")
+            return false
+        }
+
         val blockEndTime = timestamps[packageName] ?: return false
+        Log.d("MyAccessibilityService", "Current time: ${System.currentTimeMillis()}, Block end time: $blockEndTime")
 
         if (blockEndTime < System.currentTimeMillis()) {
-            // Block expired, remove from blocked apps
+            Log.d("MyAccessibilityService", "Block expired for $packageName, removing from blocked list.")
+
+            // Remove from blocked list
             val newBlockedApps = blockedApps.toMutableSet()
             newBlockedApps.remove(packageName)
             prefs.blockedApps = newBlockedApps
@@ -711,15 +637,17 @@ class MyAccessibilityService : android.accessibilityservice.AccessibilityService
             prefs.blockedAppsTimestamps = newTimestamps
 
             // Notify user
-            applicationContext.showToast(
-                getString(R.string.app_unblocked_auto,
-                    getAppName(packageName)
-                )
-            )
+            applicationContext.showToast("App unblocked: ${getAppName(packageName)}")
+
             return false
         }
+
+        Log.d("MyAccessibilityService", "$packageName is still blocked. Returning TRUE.")
         return true
     }
+
+
+
 
     private fun getAppName(packageName: String): String {
         return try {

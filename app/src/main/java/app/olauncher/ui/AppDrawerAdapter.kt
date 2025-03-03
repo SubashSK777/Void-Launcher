@@ -284,6 +284,7 @@ class AppDrawerAdapter(
 
         private fun showBlockDurationDialog(context: Context, appModel: AppModel, appBlockListener: (AppModel, Long) -> Unit) {
             val durations = arrayOf(
+                context.getString(R.string.one_minute),
                 context.getString(R.string.one_hour),
                 context.getString(R.string.four_hours),
                 context.getString(R.string.eight_hours),
@@ -295,11 +296,12 @@ class AppDrawerAdapter(
                 .setTitle(context.getString(R.string.block_duration))
                 .setItems(durations) { _, which ->
                     val duration = when (which) {
-                        0 -> Constants.BlockDuration.ONE_HOUR
-                        1 -> Constants.BlockDuration.FOUR_HOURS
-                        2 -> Constants.BlockDuration.EIGHT_HOURS
-                        3 -> Constants.BlockDuration.ONE_DAY
-                        4 -> Constants.BlockDuration.ONE_WEEK
+                        0 -> Constants.BlockDuration.ONE_MINUTE // Added case for 1 min
+                        1 -> Constants.BlockDuration.ONE_HOUR
+                        2 -> Constants.BlockDuration.FOUR_HOURS
+                        3 -> Constants.BlockDuration.EIGHT_HOURS
+                        4 -> Constants.BlockDuration.ONE_DAY
+                        5 -> Constants.BlockDuration.ONE_WEEK
                         else -> Constants.BlockDuration.ONE_HOUR
                     }
                     appBlockListener(appModel, duration) //

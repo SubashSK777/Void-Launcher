@@ -170,6 +170,9 @@
     <string name="app_blocked" translatable="false">App blocked</string>
     <string name="app_is_blocked" translatable="false">This app is currently blocked</string>
     <string name="block_duration" translatable="false">Block Duration</string>
+
+    <string name="one_minute" translatable="false">1 Min</string>
+
     <string name="one_hour" translatable="false">1 Hour</string>
     <string name="four_hours" translatable="false">4 Hours</string>
     <string name="eight_hours" translatable="false">8 Hours</string>
