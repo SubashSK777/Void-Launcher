@@ -22,7 +22,6 @@ import app.olauncher.data.Prefs
 import app.olauncher.databinding.FragmentAppDrawerBinding
 import app.olauncher.helper.hideKeyboard
 import app.olauncher.helper.isEinkDisplay
-import app.olauncher.helper.isSystemApp
 import app.olauncher.helper.openAppInfo
 import app.olauncher.helper.openSearch
 import app.olauncher.helper.openUrl
@@ -106,9 +105,85 @@ class AppDrawerFragment : Fragment() {
     }
 
     private fun onAppClicked(appModel: AppModel) {
-        requireContext().startActivity(requireContext().packageManager.getLaunchIntentForPackage(appModel.appPackage))
+        when (flag) {
+            Constants.FLAG_SET_HOME_APP_1 -> setHomeApp(1, appModel)
+            Constants.FLAG_SET_HOME_APP_2 -> setHomeApp(2, appModel)
+            Constants.FLAG_SET_HOME_APP_3 -> setHomeApp(3, appModel)
+            Constants.FLAG_SET_HOME_APP_4 -> setHomeApp(4, appModel)
+            Constants.FLAG_SET_HOME_APP_5 -> setHomeApp(5, appModel)
+            Constants.FLAG_SET_HOME_APP_6 -> setHomeApp(6, appModel)
+            Constants.FLAG_SET_HOME_APP_7 -> setHomeApp(7, appModel)
+            Constants.FLAG_SET_HOME_APP_8 -> setHomeApp(8, appModel)
+            Constants.FLAG_SET_CLOCK_APP -> {
+                prefs.clockAppPackage = appModel.appPackage
+                prefs.clockAppClassName = appModel.activityClassName
+                prefs.clockAppUser = appModel.user.toString()
+                findNavController().popBackStack()
+            }
+            Constants.FLAG_SET_CALENDAR_APP -> {
+                prefs.calendarAppPackage = appModel.appPackage
+                prefs.calendarAppClassName = appModel.activityClassName
+                prefs.calendarAppUser = appModel.user.toString()
+                findNavController().popBackStack()
+            }
+            else -> requireContext().startActivity(requireContext().packageManager.getLaunchIntentForPackage(appModel.appPackage))
+        }
     }
 
+    private fun setHomeApp(position: Int, appModel: AppModel) {
+        when (position) {
+            1 -> {
+                prefs.appPackage1 = appModel.appPackage
+                prefs.appName1 = appModel.appLabel
+                prefs.appUser1 = appModel.user.toString()
+                prefs.appActivityClassName1 = appModel.activityClassName
+            }
+            2 -> {
+                prefs.appPackage2 = appModel.appPackage
+                prefs.appName2 = appModel.appLabel
+                prefs.appUser2 = appModel.user.toString()
+                prefs.appActivityClassName2 = appModel.activityClassName
+            }
+            3 -> {
+                prefs.appPackage3 = appModel.appPackage
+                prefs.appName3 = appModel.appLabel
+                prefs.appUser3 = appModel.user.toString()
+                prefs.appActivityClassName3 = appModel.activityClassName
+            }
+            4 -> {
+                prefs.appPackage4 = appModel.appPackage
+                prefs.appName4 = appModel.appLabel
+                prefs.appUser4 = appModel.user.toString()
+                prefs.appActivityClassName4 = appModel.activityClassName
+            }
+            5 -> {
+                prefs.appPackage5 = appModel.appPackage
+                prefs.appName5 = appModel.appLabel
+                prefs.appUser5 = appModel.user.toString()
+                prefs.appActivityClassName5 = appModel.activityClassName
+            }
+            6 -> {
+                prefs.appPackage6 = appModel.appPackage
+                prefs.appName6 = appModel.appLabel
+                prefs.appUser6 = appModel.user.toString()
+                prefs.appActivityClassName6 = appModel.activityClassName
+            }
+            7 -> {
+                prefs.appPackage7 = appModel.appPackage
+                prefs.appName7 = appModel.appLabel
+                prefs.appUser7 = appModel.user.toString()
+                prefs.appActivityClassName7 = appModel.activityClassName
+            }
+            8 -> {
+                prefs.appPackage8 = appModel.appPackage
+                prefs.appName8 = appModel.appLabel
+                prefs.appUser8 = appModel.user.toString()
+                prefs.appActivityClassName8 = appModel.activityClassName
+            }
+        }
+        viewModel.refreshHome(true)
+        findNavController().popBackStack()
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initAdapter() {
