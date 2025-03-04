@@ -235,8 +235,9 @@
     <string name="next_break_in" translatable="false">Next Break In: %s</string>
 
     <!-- Break time notification strings -->
-    <string name="break_time_ended_title">Break Time Ended</string>
-    <string name="break_time_ended_message">Your break time for %s has ended. The app will now be blocked again.</string>
+    <string name="break_time_ended_title">Break Time Over</string>
+    <string name="break_time_ended_message">Your allowed time for this session has ended. Closing the app now.</string>
+    <string name="close_app">Close App</string>
     <string name="break_time_remaining">%s remaining</string>
     <string name="break_time_ending">Break time ending in 1 minute</string>
 
