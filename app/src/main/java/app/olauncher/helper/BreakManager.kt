@@ -20,7 +20,9 @@ class BreakManager(private val context: Context) {
         private const val KEY_BREAK_USAGE = "break_usage"  // Map of packageName to used break time
         private const val KEY_LAST_BREAK_START = "last_break_start"  // Map of packageName to last break start time
         private const val KEY_REMAINING_BREAK_TIME = "remaining_break_time"  // Map of packageName to remaining break time
+        private const val KEY_CARRYOVER_TIME = "carryover_time"
         private const val NOTIFICATION_INTERVAL = 5 * 60 * 1000L // 5 minutes in milliseconds
+        private const val MAX_CARRYOVER_TIME = 45 * 60 * 1000L // 45 minutes in milliseconds
     }
 
     // Get remaining block time for an app
