@@ -126,6 +126,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (intent?.getBooleanExtra("show_force_close_dialog", false) == true) {
+            val packageName = intent.getStringExtra("package_name") ?: return
+            showForceCloseDialog(packageName)
+        }
+
         scheduleBlockExpiryCheck()
         initializeWorkManager()
 
@@ -554,6 +558,43 @@ class MainActivity : AppCompatActivity() {
             }
             .create()
             .show()
+    }
+
+    private fun showForceCloseDialog(packageName: String) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.break_time_ended_title))
+            .setMessage(getString(R.string.break_time_ended_message))
+            .setCancelable(false)
+            .setPositiveButton(getString(R.string.close_app)) { _, _ ->
+                // Force stop the app
+                val intent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_HOME)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(intent)
+
+                // Reset break time and update block status
+                breakManager.stopBreak(packageName)
+
+                try {
+                    // Force stop the app using ActivityManager
+                    val am = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+                    am.killBackgroundProcesses(packageName)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            .create()
+
+        // Show dialog and prevent it from being dismissed by back button or touch outside
+        dialog.setOnKeyListener { _, keyCode, _ -> keyCode == KeyEvent.KEYCODE_BACK }
+        dialog.show()
+        
+        // Prevent touching outside the dialog
+        dialog.window?.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        )
     }
 }
 
