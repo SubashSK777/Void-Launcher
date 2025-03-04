@@ -120,8 +120,14 @@ class BreakManager(private val context: Context) {
         val newRemainingTime = maxOf(0L, remainingTime - usageTime)
         setRemainingBreakTime(packageName, newRemainingTime)
 
-        // If time has expired, show force close dialog immediately
         if (newRemainingTime <= 0) {
+            val unusedTime = maxOf(0L, remainingTime)
+            if (unusedTime > 0) {
+                // Save unused time as carryover
+                val currentCarryover = getCarryoverTime(packageName)
+                val newCarryover = minOf(currentCarryover + unusedTime, MAX_CARRYOVER_TIME)
+                setCarryoverTime(packageName, newCarryover)
+            }
             showForceCloseDialog(packageName)
         }
     }
@@ -254,6 +260,62 @@ class BreakManager(private val context: Context) {
         val standardBreakTime = appPrefs.breakDuration * 60 * 1000L
         val carryoverTime = getCarryoverTime(packageName)
         return standardBreakTime + carryoverTime
+    }
+
+    // Track next scheduled break time
+    private fun setNextBreakTime(packageName: String, nextBreakTime: Long) {
+        val nextBreakTimesStr = prefs.getString(KEY_NEXT_BREAK_TIME, "{}")
+        val nextBreakTimes = nextBreakTimesStr?.let { parseBreakTimes(it) } ?: mutableMapOf()
+        nextBreakTimes[packageName] = nextBreakTime
+        prefs.edit().putString(KEY_NEXT_BREAK_TIME, formatBreakTimes(nextBreakTimes)).apply()
+    }
+
+    private fun getNextBreakTime(packageName: String): Long {
+        val nextBreakTimesStr = prefs.getString(KEY_NEXT_BREAK_TIME, "{}")
+        val nextBreakTimes = nextBreakTimesStr?.let { parseBreakTimes(it) } ?: mutableMapOf()
+        return nextBreakTimes[packageName] ?: 0L
+    }
+
+    // Enhanced break scheduling
+    fun scheduleNextBreak(packageName: String) {
+        val appPrefs = Prefs(context)
+        if (appPrefs.breaksDisabled || areBreaksDisabledForApp(packageName)) return
+
+        val breakInterval = appPrefs.breakInterval * 60 * 60 * 1000L
+        val nextBreakTime = System.currentTimeMillis() + breakInterval
+        setNextBreakTime(packageName, nextBreakTime)
+
+        // Schedule notification for next break
+        scheduleBreakNotification(packageName, nextBreakTime)
+    }
+
+    // Improved break notification scheduling
+    private fun scheduleBreakNotification(packageName: String, breakTime: Long) {
+        cancelBreakNotifications(packageName)
+
+        val runnable = object : Runnable {
+            override fun run() {
+                val currentTime = System.currentTimeMillis()
+                val timeUntilBreak = breakTime - currentTime
+
+                when {
+                    timeUntilBreak <= 0 -> {
+                        // Break time has arrived
+                        startBreak(packageName)
+                    }
+                    timeUntilBreak <= 5 * 60 * 1000 -> { // 5 minutes warning
+                        context.showToast("Break for $packageName starting in ${formatRemainingTime(timeUntilBreak)}")
+                        handler.postDelayed(this, 60 * 1000) // Check every minute
+                    }
+                    else -> {
+                        handler.postDelayed(this, BREAK_CHECK_INTERVAL)
+                    }
+                }
+            }
+        }
+
+        toastRunnables[packageName] = runnable
+        handler.postDelayed(runnable, BREAK_CHECK_INTERVAL)
     }
 
     override fun onDestroy() {

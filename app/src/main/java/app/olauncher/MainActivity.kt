@@ -397,6 +397,8 @@ class MainActivity : AppCompatActivity() {
                 nextBreakView.visibility = View.GONE
             } else {
                 updateBreakViews(packageName, breakTimeRemainingView, nextBreakView)
+                // Schedule next break when re-enabling
+                breakManager.scheduleNextBreak(packageName)
             }
         }
 
@@ -410,9 +412,6 @@ class MainActivity : AppCompatActivity() {
         breakTrackingJob = lifecycleScope.launch {
             while (isActive) {
                 val remainingBlockTime = breakManager.getRemainingBlockTime(packageName)
-                val remainingBreakTime = breakManager.getRemainingBreakTime(packageName)
-                val isInBreak = breakManager.isInBreakPeriod(packageName)
-
                 timeRemainingView.text = getString(
                     R.string.time_remaining,
                     breakManager.formatRemainingTime(remainingBlockTime)
@@ -445,7 +444,6 @@ class MainActivity : AppCompatActivity() {
         if (isInBreak) {
             breakTimeRemainingView.visibility = View.VISIBLE
             nextBreakView.visibility = View.GONE
-            val totalBreakTime = breakManager.getTotalBreakTime(packageName)
             breakTimeRemainingView.text = getString(
                 R.string.break_time_remaining_with_bonus,
                 breakManager.formatRemainingTime(remainingBreakTime),
@@ -455,7 +453,7 @@ class MainActivity : AppCompatActivity() {
             breakTimeRemainingView.visibility = View.GONE
             if (!prefs.breaksDisabled) {
                 nextBreakView.visibility = View.VISIBLE
-                val nextBreakTime = prefs.breakInterval * 60 * 60 * 1000L
+                val nextBreakTime = breakManager.getNextBreakTime(packageName) - System.currentTimeMillis()
                 val message = if (carryoverTime > 0) {
                     getString(
                         R.string.next_break_in_with_bonus,
