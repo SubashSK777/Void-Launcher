@@ -60,6 +60,8 @@ import androidx.work.WorkRequest
 import app.olauncher.helper.BlockExpiryWorker
 import app.olauncher.helper.OtpHelper
 import app.olauncher.helper.BreakManager
+import android.view.KeyEvent
+import android.view.WindowManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -123,6 +125,7 @@ class MainActivity : AppCompatActivity() {
             showBreakEndedDialog(packageName)
         }
 
+        if (intent?.getBooleanExtra("show_force_close_dialog", false) == true) {
         scheduleBlockExpiryCheck()
         initializeWorkManager()
 
