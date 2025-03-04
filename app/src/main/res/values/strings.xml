@@ -242,6 +242,9 @@
     <string name="break_time_ended_message">Your allowed time for this session has ended. Closing the app now.</string>
     <string name="close_app">Close App</string>
     <string name="break_time_remaining">%s remaining</string>
+    <string name="break_time_remaining_with_bonus">%1$s remaining (includes %2$s bonus time)</string>
+    <string name="next_break_in">Next Break In: %s</string>
+    <string name="next_break_in_with_bonus">Next Break In: %1$s (with %2$s bonus time)</string>
     <string name="break_time_ending">Break time ending in 1 minute</string>
 
 </resources>
