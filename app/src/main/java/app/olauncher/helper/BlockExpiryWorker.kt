@@ -44,8 +44,7 @@ class BlockExpiryWorker(
                             .loadLabel(context.packageManager)
                             .toString()
                         context.showToast(
-                            context.getString(R.string.app_unblocked_auto, appName) + 
-                            " for ${prefs.breakDuration} minutes"
+                            context.getString(R.string.app_unblocked_break, appName, prefs.breakDuration)
                         )
                     } catch (e: Exception) {
                         e.printStackTrace()
