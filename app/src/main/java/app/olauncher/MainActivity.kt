@@ -613,18 +613,18 @@ class MainActivity : AppCompatActivity() {
             .setMessage(getString(R.string.break_time_ended_message))
             .setCancelable(false)
             .setPositiveButton(getString(R.string.close_app)) { _, _ ->
-                // Force stop the app
+                // Return to home screen
                 val intent = Intent(Intent.ACTION_MAIN).apply {
                     addCategory(Intent.CATEGORY_HOME)
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
                 startActivity(intent)
 
-                // Reset break time and update block status
+                // Save any unused time as carryover and stop the break
                 breakManager.stopBreak(packageName)
 
                 try {
-                    // Force stop the app using ActivityManager
+                    // Force stop the app
                     val am = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
                     am.killBackgroundProcesses(packageName)
                 } catch (e: Exception) {
@@ -633,11 +633,13 @@ class MainActivity : AppCompatActivity() {
             }
             .create()
 
-        // Show dialog and prevent it from being dismissed by back button or touch outside
+        // Prevent dialog dismissal
+        dialog.setCanceledOnTouchOutside(false)
         dialog.setOnKeyListener { _, keyCode, _ -> keyCode == KeyEvent.KEYCODE_BACK }
+        
         dialog.show()
         
-        // Prevent touching outside the dialog
+        // Prevent touching outside
         dialog.window?.setFlags(
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
