@@ -59,6 +59,7 @@ import androidx.work.BackoffPolicy
 import androidx.work.WorkRequest
 import app.olauncher.helper.BlockExpiryWorker
 import app.olauncher.helper.OtpHelper
+import app.olauncher.helper.BreakManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -67,6 +68,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
     private var timerJob: Job? = null
+    private var breakTrackingJob: Job? = null
+    private lateinit var breakManager: BreakManager
 
     override fun onBackPressed() {
         if (navController.currentDestination?.id != R.id.mainFragment)
@@ -117,6 +120,8 @@ class MainActivity : AppCompatActivity() {
 
         scheduleBlockExpiryCheck()
         initializeWorkManager()
+
+        breakManager = BreakManager(this)
     }
 
     override fun onStart() {
