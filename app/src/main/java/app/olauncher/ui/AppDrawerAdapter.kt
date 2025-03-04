@@ -28,7 +28,7 @@ import app.olauncher.helper.isSystemApp
 import app.olauncher.helper.showKeyboard
 import app.olauncher.ui.AppDrawerFragment
 import android.widget.ArrayAdapter
-
+import android.widget.CheckBox
 
 import java.text.Normalizer
 
@@ -293,6 +293,38 @@ class AppDrawerAdapter(
                 context.getString(R.string.one_week)
             )
 
+            val prefs = Prefs(context)
+
+            // Create dialog view
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_break_settings, null)
+            
+            // Setup break interval spinner
+            val breakIntervals = arrayOf(
+                context.getString(R.string.break_interval_1h),
+                context.getString(R.string.break_interval_2h),
+                context.getString(R.string.break_interval_4h),
+                context.getString(R.string.break_interval_6h),
+                context.getString(R.string.break_interval_12h)
+            )
+            val breakIntervalSpinner = dialogView.findViewById<Spinner>(R.id.break_interval_spinner)
+            breakIntervalSpinner.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, breakIntervals)
+            breakIntervalSpinner.setSelection(1) // Default to 2 hours
+
+            // Setup break duration spinner
+            val breakDurations = arrayOf(
+                context.getString(R.string.break_duration_5m),
+                context.getString(R.string.break_duration_10m),
+                context.getString(R.string.break_duration_15m),
+                context.getString(R.string.break_duration_20m)
+            )
+            val breakDurationSpinner = dialogView.findViewById<Spinner>(R.id.break_duration_spinner)
+            breakDurationSpinner.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, breakDurations)
+            breakDurationSpinner.setSelection(1) // Default to 10 minutes
+
+            // Setup disable breaks checkbox
+            val disableBreaksCheckbox = dialogView.findViewById<CheckBox>(R.id.disable_breaks_checkbox)
+            disableBreaksCheckbox.isChecked = prefs.breaksDisabled
+
             AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.block_duration))
                 .setItems(durations) { _, which ->
@@ -304,7 +336,37 @@ class AppDrawerAdapter(
                         4 -> Constants.BlockDuration.ONE_WEEK
                         else -> Constants.BlockDuration.ONE_HOUR
                     }
-                    appBlockListener(appModel, duration) //
+
+                    // Show break settings dialog
+                    AlertDialog.Builder(context)
+                        .setTitle(context.getString(R.string.break_settings))
+                        .setView(dialogView)
+                        .setPositiveButton(context.getString(R.string.block)) { _, _ ->
+                            // Save break settings
+                            val breakInterval = when(breakIntervalSpinner.selectedItemPosition) {
+                                0 -> 1
+                                1 -> 2
+                                2 -> 4
+                                3 -> 6
+                                4 -> 12
+                                else -> 2
+                            }
+                            val breakDuration = when(breakDurationSpinner.selectedItemPosition) {
+                                0 -> 5
+                                1 -> 10
+                                2 -> 15
+                                3 -> 20
+                                else -> 10
+                            }
+                            prefs.breakInterval = breakInterval
+                            prefs.breakDuration = breakDuration
+                            prefs.breaksDisabled = disableBreaksCheckbox.isChecked
+
+                            // Block the app
+                            appBlockListener(appModel, duration)
+                        }
+                        .setNegativeButton(context.getString(R.string.cancel), null)
+                        .show()
                 }
                 .setNegativeButton(context.getString(R.string.cancel), null)
                 .show()
