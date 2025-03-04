@@ -457,6 +457,18 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean(FILTER_ENABLED, false)
         set(value) = prefs.edit().putBoolean(FILTER_ENABLED, value).apply()
 
+    var breakInterval: Int
+        get() = prefs.getInt(BREAK_INTERVAL, 2) // Default 2 hours
+        set(value) = prefs.edit().putInt(BREAK_INTERVAL, value).apply()
+
+    var breakDuration: Int
+        get() = prefs.getInt(BREAK_DURATION, 10) // Default 10 minutes
+        set(value) = prefs.edit().putInt(BREAK_DURATION, value).apply()
+
+    var breaksDisabled: Boolean
+        get() = prefs.getBoolean(BREAKS_DISABLED, false)
+        set(value) = prefs.edit().putBoolean(BREAKS_DISABLED, value).apply()
+
     fun getAppName(location: Int): String {
         return when (location) {
             1 -> prefs.getString(APP_NAME_1, "").toString()

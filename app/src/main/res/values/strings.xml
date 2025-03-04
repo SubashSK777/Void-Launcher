@@ -178,6 +178,20 @@
     <string name="block_app" translatable="false">Block app</string>
     <string name="block" translatable="false">Block</string>
 
+    <!-- Break scheduling strings -->
+    <string name="break_interval" translatable="false">Break Interval</string>
+    <string name="break_duration" translatable="false">Break Duration</string>
+    <string name="disable_breaks" translatable="false">Disable Breaks</string>
+    <string name="break_interval_1h" translatable="false">1 Hour</string>
+    <string name="break_interval_2h" translatable="false">2 Hours</string>
+    <string name="break_interval_4h" translatable="false">4 Hours</string>
+    <string name="break_interval_6h" translatable="false">6 Hours</string>
+    <string name="break_interval_12h" translatable="false">12 Hours</string>
+    <string name="break_duration_5m" translatable="false">5 Minutes</string>
+    <string name="break_duration_10m" translatable="false">10 Minutes</string>
+    <string name="break_duration_15m" translatable="false">15 Minutes</string>
+    <string name="break_duration_20m" translatable="false">20 Minutes</string>
+    <string name="break_settings" translatable="false">Break Settings</string>
 
     <string name="blocked_apps_count" translatable="false">Blocked Apps: %d</string>
     <string name="request_otp" translatable="false">Request OTP</string>
