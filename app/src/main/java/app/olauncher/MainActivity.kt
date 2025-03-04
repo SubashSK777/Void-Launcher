@@ -375,6 +375,30 @@ class MainActivity : AppCompatActivity() {
         val timeRemainingView = dialogView.findViewById<TextView>(R.id.time_remaining)
         val breakTimeRemainingView = dialogView.findViewById<TextView>(R.id.break_time_remaining)
         val nextBreakView = dialogView.findViewById<TextView>(R.id.next_break)
+        val disableBreaksSwitch = dialogView.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.disable_breaks_switch)
+
+        // Initialize switch state
+        disableBreaksSwitch.isChecked = breakManager.areBreaksDisabledForApp(packageName)
+
+        // Handle switch state changes
+        disableBreaksSwitch.setOnCheckedChangeListener { _, isChecked ->
+            breakManager.setBreaksDisabledForApp(packageName, isChecked)
+            showToast(
+                getString(
+                    if (isChecked) R.string.breaks_disabled_for_app
+                    else R.string.breaks_enabled_for_app,
+                    appName
+                )
+            )
+            
+            // Update UI based on break status
+            if (isChecked) {
+                breakTimeRemainingView.visibility = View.GONE
+                nextBreakView.visibility = View.GONE
+            } else {
+                updateBreakViews(packageName, breakTimeRemainingView, nextBreakView)
+            }
+        }
 
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
@@ -394,25 +418,8 @@ class MainActivity : AppCompatActivity() {
                     breakManager.formatRemainingTime(remainingBlockTime)
                 )
 
-                if (isInBreak) {
-                    breakTimeRemainingView.visibility = View.VISIBLE
-                    nextBreakView.visibility = View.GONE
-                    breakTimeRemainingView.text = getString(
-                        R.string.break_time_remaining,
-                        breakManager.formatRemainingTime(remainingBreakTime)
-                    )
-                } else {
-                    breakTimeRemainingView.visibility = View.GONE
-                    if (!prefs.breaksDisabled) {
-                        nextBreakView.visibility = View.VISIBLE
-                        val nextBreakTime = prefs.breakInterval * 60 * 60 * 1000L // Convert to milliseconds
-                        nextBreakView.text = getString(
-                            R.string.next_break_in,
-                            breakManager.formatRemainingTime(nextBreakTime)
-                        )
-                    } else {
-                        nextBreakView.visibility = View.GONE
-                    }
+                if (!breakManager.areBreaksDisabledForApp(packageName)) {
+                    updateBreakViews(packageName, breakTimeRemainingView, nextBreakView)
                 }
 
                 delay(1000) // Update every second
@@ -424,6 +431,36 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    private fun updateBreakViews(
+        packageName: String,
+        breakTimeRemainingView: TextView,
+        nextBreakView: TextView
+    ) {
+        val isInBreak = breakManager.isInBreakPeriod(packageName)
+        val remainingBreakTime = breakManager.getRemainingBreakTime(packageName)
+
+        if (isInBreak) {
+            breakTimeRemainingView.visibility = View.VISIBLE
+            nextBreakView.visibility = View.GONE
+            breakTimeRemainingView.text = getString(
+                R.string.break_time_remaining,
+                breakManager.formatRemainingTime(remainingBreakTime)
+            )
+        } else {
+            breakTimeRemainingView.visibility = View.GONE
+            if (!prefs.breaksDisabled) {
+                nextBreakView.visibility = View.VISIBLE
+                val nextBreakTime = prefs.breakInterval * 60 * 60 * 1000L
+                nextBreakView.text = getString(
+                    R.string.next_break_in,
+                    breakManager.formatRemainingTime(nextBreakTime)
+                )
+            } else {
+                nextBreakView.visibility = View.GONE
+            }
+        }
     }
 
     private lateinit var progressDialog: AlertDialog
