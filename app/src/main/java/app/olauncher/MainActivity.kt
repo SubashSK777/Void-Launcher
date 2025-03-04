@@ -440,23 +440,35 @@ class MainActivity : AppCompatActivity() {
     ) {
         val isInBreak = breakManager.isInBreakPeriod(packageName)
         val remainingBreakTime = breakManager.getRemainingBreakTime(packageName)
+        val carryoverTime = breakManager.getCarryoverTime(packageName)
 
         if (isInBreak) {
             breakTimeRemainingView.visibility = View.VISIBLE
             nextBreakView.visibility = View.GONE
+            val totalBreakTime = breakManager.getTotalBreakTime(packageName)
             breakTimeRemainingView.text = getString(
-                R.string.break_time_remaining,
-                breakManager.formatRemainingTime(remainingBreakTime)
+                R.string.break_time_remaining_with_bonus,
+                breakManager.formatRemainingTime(remainingBreakTime),
+                breakManager.formatRemainingTime(carryoverTime)
             )
         } else {
             breakTimeRemainingView.visibility = View.GONE
             if (!prefs.breaksDisabled) {
                 nextBreakView.visibility = View.VISIBLE
                 val nextBreakTime = prefs.breakInterval * 60 * 60 * 1000L
-                nextBreakView.text = getString(
-                    R.string.next_break_in,
-                    breakManager.formatRemainingTime(nextBreakTime)
-                )
+                val message = if (carryoverTime > 0) {
+                    getString(
+                        R.string.next_break_in_with_bonus,
+                        breakManager.formatRemainingTime(nextBreakTime),
+                        breakManager.formatRemainingTime(carryoverTime)
+                    )
+                } else {
+                    getString(
+                        R.string.next_break_in,
+                        breakManager.formatRemainingTime(nextBreakTime)
+                    )
+                }
+                nextBreakView.text = message
             } else {
                 nextBreakView.visibility = View.GONE
             }

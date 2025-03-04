@@ -97,12 +97,16 @@ class BreakManager(private val context: Context) {
         val currentTime = System.currentTimeMillis()
         setLastBreakStart(packageName, currentTime)
         
-        if (getRemainingBreakTime(packageName) == 0L) {
-            val appPrefs = Prefs(context)
-            val breakDuration = appPrefs.breakDuration * 60 * 1000L
-            setRemainingBreakTime(packageName, breakDuration)
-            scheduleBreakNotifications(packageName, breakDuration)
-        }
+        val appPrefs = Prefs(context)
+        val standardBreakDuration = appPrefs.breakDuration * 60 * 1000L
+        val carryoverTime = getCarryoverTime(packageName)
+        val totalBreakTime = standardBreakDuration + carryoverTime
+
+        setRemainingBreakTime(packageName, totalBreakTime)
+        scheduleBreakNotifications(packageName, totalBreakTime)
+        
+        // Reset carryover time since we're using it now
+        setCarryoverTime(packageName, 0L)
     }
 
     // Update break usage time and check for expiration
@@ -215,8 +219,36 @@ class BreakManager(private val context: Context) {
     }
 
     fun stopBreak(packageName: String) {
+        val remainingTime = getRemainingBreakTime(packageName)
+        if (remainingTime > 0) {
+            // Add current remaining time to any existing carryover time
+            val currentCarryover = getCarryoverTime(packageName)
+            val newCarryover = minOf(currentCarryover + remainingTime, MAX_CARRYOVER_TIME)
+            setCarryoverTime(packageName, newCarryover)
+        }
+        
         cancelBreakNotifications(packageName)
         setRemainingBreakTime(packageName, 0L)
+    }
+
+    fun getCarryoverTime(packageName: String): Long {
+        val carryoverTimesStr = prefs.getString(KEY_CARRYOVER_TIME, "{}")
+        val carryoverTimes = carryoverTimesStr?.let { parseBreakTimes(it) } ?: mutableMapOf()
+        return carryoverTimes[packageName] ?: 0L
+    }
+
+    private fun setCarryoverTime(packageName: String, carryoverTime: Long) {
+        val carryoverTimesStr = prefs.getString(KEY_CARRYOVER_TIME, "{}")
+        val carryoverTimes = carryoverTimesStr?.let { parseBreakTimes(it) } ?: mutableMapOf()
+        carryoverTimes[packageName] = minOf(carryoverTime, MAX_CARRYOVER_TIME)
+        prefs.edit().putString(KEY_CARRYOVER_TIME, formatBreakTimes(carryoverTimes)).apply()
+    }
+
+    fun getTotalBreakTime(packageName: String): Long {
+        val appPrefs = Prefs(context)
+        val standardBreakTime = appPrefs.breakDuration * 60 * 1000L
+        val carryoverTime = getCarryoverTime(packageName)
+        return standardBreakTime + carryoverTime
     }
 
     override fun onDestroy() {
