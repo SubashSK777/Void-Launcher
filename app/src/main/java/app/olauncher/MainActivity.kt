@@ -12,10 +12,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.InputFilter
 import android.text.InputType
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import android.view.accessibility.AccessibilityEvent
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -345,42 +347,65 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("StringFormatInvalid")
-    private  fun showBlockedAppDialog(packageName: String) {
+    private fun showBlockedAppDialog(packageName: String) {
         val appName = try {
             packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
         } catch (e: Exception) {
             packageName
         }
 
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_app_blocked, null)
+        val timeRemainingView = dialogView.findViewById<TextView>(R.id.time_remaining)
+        val breakTimeRemainingView = dialogView.findViewById<TextView>(R.id.break_time_remaining)
+        val nextBreakView = dialogView.findViewById<TextView>(R.id.next_break)
+
         val dialog = AlertDialog.Builder(this)
-            .setTitle(getString(R.string.app_blocked))
-            .setMessage(getString(R.string.app_is_blocked, appName))
-            .setPositiveButton(getString(R.string.request_otp)) { _, _ ->
-                showProgressDialog(getString(R.string.sending_otp))
-               lifecycleScope.launch {
-                    OtpHelper.generateAndSendOTP(this@MainActivity, packageName) { success ->
-                            hideProgressDialog()
-                            if (success) {
-                                showOtpInputDialog(packageName)
-                            } else {
-                                showMessageDialog(
-                                    getString(R.string.error),
-                                    getString(R.string.otp_send_failed),
-                                    getString(R.string.okay)
-                                ) {
-                                    binding.messageLayout.visibility = View.GONE
-                                }
-                            }
-                        }
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        // Update time remaining periodically
+        breakTrackingJob?.cancel()
+        breakTrackingJob = lifecycleScope.launch {
+            while (isActive) {
+                val remainingBlockTime = breakManager.getRemainingBlockTime(packageName)
+                val remainingBreakTime = breakManager.getRemainingBreakTime(packageName)
+                val isInBreak = breakManager.isInBreakPeriod(packageName)
+
+                timeRemainingView.text = getString(
+                    R.string.time_remaining,
+                    breakManager.formatRemainingTime(remainingBlockTime)
+                )
+
+                if (isInBreak) {
+                    breakTimeRemainingView.visibility = View.VISIBLE
+                    nextBreakView.visibility = View.GONE
+                    breakTimeRemainingView.text = getString(
+                        R.string.break_time_remaining,
+                        breakManager.formatRemainingTime(remainingBreakTime)
+                    )
+                } else {
+                    breakTimeRemainingView.visibility = View.GONE
+                    if (!prefs.breaksDisabled) {
+                        nextBreakView.visibility = View.VISIBLE
+                        val nextBreakTime = prefs.breakInterval * 60 * 60 * 1000L // Convert to milliseconds
+                        nextBreakView.text = getString(
+                            R.string.next_break_in,
+                            breakManager.formatRemainingTime(nextBreakTime)
+                        )
+                    } else {
+                        nextBreakView.visibility = View.GONE
                     }
                 }
 
-
-            .setNegativeButton(getString(R.string.okay)) { _, _ ->
-                binding.messageLayout.visibility = View.GONE
+                delay(1000) // Update every second
             }
-            .create()
-        
+        }
+
+        dialog.setOnDismissListener {
+            breakTrackingJob?.cancel()
+        }
+
         dialog.show()
     }
 
