@@ -221,6 +221,7 @@
     <string name="partner_email_saved" translatable="false">Partner email saved successfully</string>
     <string name="partner_email_invalid" translatable="false">Please enter a valid email address</string>
     <string name="app_unblocked_auto" translatable="false">%s is now unblocked</string>
+    <string name="app_unblocked_break" translatable="false">%s is now unblocked for %d minutes</string>
     <string name="accountability_partner_email" translatable="false">Accountability Partner Email</string>
     <string name="otp_sent" translatable="false">OTP sent to accountability partner</string>
     <string name="otp_expired" translatable="false">OTP has expired</string>
