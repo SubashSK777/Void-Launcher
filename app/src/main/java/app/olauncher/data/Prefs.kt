@@ -97,14 +97,16 @@ class Prefs(context: Context) {
     private val BREAKS_DISABLED = "BREAKS_DISABLED"
 
     companion object {
-    private const val PARTNER_EMAIL = "PARTNER_EMAIL"
-    private const val OTP_TIMESTAMP = "OTP_TIMESTAMP"
-    private const val OTP_VALUE = "OTP_VALUE"
-    private const val OTP_ATTEMPTS = "OTP_ATTEMPTS"
-    private const val OTP_LOCKOUT_TIME = "OTP_LOCKOUT_TIME"
+        private const val PARTNER_EMAIL = "PARTNER_EMAIL"
+        private const val OTP_TIMESTAMP = "OTP_TIMESTAMP"
+        private const val OTP_VALUE = "OTP_VALUE"
+        private const val OTP_ATTEMPTS = "OTP_ATTEMPTS"
+        private const val OTP_LOCKOUT_TIME = "OTP_LOCKOUT_TIME"
 
-    private const val BLOCKED_KEYWORDS = "BLOCKED_KEYWORDS"
-    private const val FILTER_ENABLED = "FILTER_ENABLED"
+        private const val BLOCKED_KEYWORDS = "BLOCKED_KEYWORDS"
+        private const val FILTER_ENABLED = "FILTER_ENABLED"
+        const val BREAKS_DISABLED = "breaks_disabled"
+        const val APPS_WITH_DISABLED_BREAKS = "apps_with_disabled_breaks"
     }
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0);
 
@@ -468,6 +470,10 @@ class Prefs(context: Context) {
     var breaksDisabled: Boolean
         get() = prefs.getBoolean(BREAKS_DISABLED, false)
         set(value) = prefs.edit().putBoolean(BREAKS_DISABLED, value).apply()
+
+    var appsWithDisabledBreaks: Set<String>
+        get() = prefs.getStringSet(APPS_WITH_DISABLED_BREAKS, emptySet()) ?: emptySet()
+        set(value) = prefs.edit().putStringSet(APPS_WITH_DISABLED_BREAKS, value).apply()
 
     fun getAppName(location: Int): String {
         return when (location) {

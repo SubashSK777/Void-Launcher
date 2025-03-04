@@ -42,27 +42,62 @@ class BreakManager(private val context: Context) {
         }
     }
 
-    // Check if app is currently in a break period
-    fun isInBreakPeriod(packageName: String): Boolean {
+    // Check if breaks are disabled for a specific app
+    fun areBreaksDisabledForApp(packageName: String): Boolean {
         val appPrefs = Prefs(context)
-        if (appPrefs.breaksDisabled) return false
+        return appPrefs.appsWithDisabledBreaks.contains(packageName)
+    }
+
+    // Enable or disable breaks for a specific app
+    fun setBreaksDisabledForApp(packageName: String, disabled: Boolean) {
+        val appPrefs = Prefs(context)
+        val currentDisabledApps = appPrefs.appsWithDisabledBreaks.toMutableSet()
+        
+        if (disabled) {
+            currentDisabledApps.add(packageName)
+            // Cancel any active break if disabling breaks
+            stopBreak(packageName)
+        } else {
+            currentDisabledApps.remove(packageName)
+            // Reschedule breaks if they were previously disabled
+            if (isAppBlocked(packageName)) {
+                val breakDuration = appPrefs.breakDuration * 60 * 1000L
+                setRemainingBreakTime(packageName, breakDuration)
+                scheduleBreakNotifications(packageName, breakDuration)
+            }
+        }
+        
+        appPrefs.appsWithDisabledBreaks = currentDisabledApps
+    }
+
+    // Check if app is blocked
+    private fun isAppBlocked(packageName: String): Boolean {
+        val appPrefs = Prefs(context)
+        return appPrefs.blockedApps.contains(packageName)
+    }
+
+    // Override the existing isInBreakPeriod to check for disabled breaks
+    override fun isInBreakPeriod(packageName: String): Boolean {
+        val appPrefs = Prefs(context)
+        if (appPrefs.breaksDisabled || areBreaksDisabledForApp(packageName)) return false
 
         val lastBreakStart = getLastBreakStart(packageName)
-        val breakDuration = appPrefs.breakDuration * 60 * 1000L // Convert to milliseconds
+        val breakDuration = appPrefs.breakDuration * 60 * 1000L
         val currentTime = System.currentTimeMillis()
 
         return currentTime - lastBreakStart < breakDuration
     }
 
-    // Start a break period for an app
-    fun startBreak(packageName: String) {
+    // Override startBreak to check for disabled breaks
+    override fun startBreak(packageName: String) {
+        if (areBreaksDisabledForApp(packageName)) return
+
         val currentTime = System.currentTimeMillis()
         setLastBreakStart(packageName, currentTime)
         
-        // Initialize remaining break time if not set
         if (getRemainingBreakTime(packageName) == 0L) {
             val appPrefs = Prefs(context)
-            val breakDuration = appPrefs.breakDuration * 60 * 1000L // Convert to milliseconds
+            val breakDuration = appPrefs.breakDuration * 60 * 1000L
             setRemainingBreakTime(packageName, breakDuration)
             scheduleBreakNotifications(packageName, breakDuration)
         }
