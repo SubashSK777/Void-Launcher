@@ -228,4 +228,10 @@
     <string name="otp_lockout" translatable="false">Too many attempts. Please try again later</string>
     <string name="sending_otp" translatable="false">Sending OTP...</string>
 
+    <!-- Block dialog strings -->
+    <string name="app_blocked_title" translatable="false">❌ App is Blocked</string>
+    <string name="time_remaining" translatable="false">⏳ Time Remaining: %s</string>
+    <string name="break_time_remaining" translatable="false">Break Time Remaining: %s</string>
+    <string name="next_break_in" translatable="false">Next Break In: %s</string>
+
 </resources>
