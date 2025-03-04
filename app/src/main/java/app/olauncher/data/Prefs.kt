@@ -91,6 +91,11 @@ class Prefs(context: Context) {
     private val BLOCKED_APPS = "BLOCKED_APPS"
     private val BLOCKED_APPS_TIMESTAMPS = "BLOCKED_APPS_TIMESTAMPS"
 
+    // Break scheduling preferences
+    private val BREAK_INTERVAL = "BREAK_INTERVAL"
+    private val BREAK_DURATION = "BREAK_DURATION"
+    private val BREAKS_DISABLED = "BREAKS_DISABLED"
+
     companion object {
     private const val PARTNER_EMAIL = "PARTNER_EMAIL"
     private const val OTP_TIMESTAMP = "OTP_TIMESTAMP"
