@@ -141,19 +141,17 @@ fun Context.formattedTimeSpent(timeSpent: Long): String {
     val minutes = seconds / 60
     val hours = minutes / 60
     val remainingMinutes = minutes % 60
+
     return when {
         timeSpent == 0L -> "0m"
-
-        hours > 0 -> getString(
-            R.string.time_spent_hour,
-            hours.toString(),
-            remainingMinutes.toString()
-        )
-
-        minutes > 0 -> {
-            getString(R.string.time_spent_min, minutes.toString())
+        hours > 0 -> {
+            if (remainingMinutes.toInt() == 0) {
+                getString(R.string.time_spent_hour_only, hours.toString())
+            } else {
+                getString(R.string.time_spent_hour, hours.toString(), remainingMinutes.toString())
+            }
         }
-
+        minutes > 0 -> getString(R.string.time_spent_min, minutes.toString())
         else -> "<1m"
     }
 }

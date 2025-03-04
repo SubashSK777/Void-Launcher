@@ -255,18 +255,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getTodaysScreenTime() {
         viewModelScope.launch {
             val usageStatsManager = appContext.getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
+            val packageManager = appContext.packageManager
 
-            val calendar = Calendar.getInstance()
-            calendar.set(Calendar.HOUR_OF_DAY, 0)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
+            // Get current time and 24 hours ago
+            val endTime = System.currentTimeMillis()
+            val startTime = endTime - ONE_DAY_IN_MILLIS
 
             val usageStats = usageStatsManager.queryUsageStats(
                 UsageStatsManager.INTERVAL_DAILY,
-                calendar.timeInMillis,
-                calendar.timeInMillis + ONE_DAY_IN_MILLIS
+                startTime,
+                endTime
             )
-            val totalTimeInMillis = usageStats.sumOf { it.totalTimeInForeground }
+
+            // Filter out system apps and calculate total time
+            val totalTimeInMillis = usageStats
+                .filter { stats ->
+                    try {
+                        val appInfo = packageManager.getApplicationInfo(stats.packageName, 0)
+                        // Filter out system apps and launchers using application flags
+                        !(appInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM != 0) && 
+                        !appInfo.packageName.contains("launcher") &&
+                        stats.totalTimeInForeground > 0
+                    } catch (e: Exception) {
+                        false
+                    }
+                }
+                .sumOf { it.totalTimeInForeground }
+
             val viewTimeSpent = appContext.formattedTimeSpent(totalTimeInMillis)
             screenTimeValue.postValue(viewTimeSpent)
         }

@@ -17,6 +17,7 @@
     <string name="tag_8" translatable="false">8</string>
     <string name="time_spent_min" translatable="false"><b>%1$sm</b></string>
     <string name="time_spent_hour" translatable="false">%1$sh %2$sm</string>
+    <string name="time_spent_hour_only" translatable="false">%1$sh</string>
 
     <string name="app">App</string>
     <string name="set_as_default_launcher">Set as default launcher</string>
