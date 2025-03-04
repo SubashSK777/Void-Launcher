@@ -118,6 +118,11 @@ class MainActivity : AppCompatActivity() {
             showBlockedContentDialog(packageName, blockedText)
         }
 
+        if (intent?.getBooleanExtra("show_break_ended_dialog", false) == true) {
+            val packageName = intent.getStringExtra("package_name") ?: return
+            showBreakEndedDialog(packageName)
+        }
+
         scheduleBlockExpiryCheck()
         initializeWorkManager()
 
@@ -523,6 +528,29 @@ class MainActivity : AppCompatActivity() {
                 ExistingPeriodicWorkPolicy.KEEP,
                 workRequest
             )
+    }
+
+    private fun showBreakEndedDialog(packageName: String) {
+        val appName = try {
+            packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
+        } catch (e: Exception) {
+            packageName
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Break Time Ended")
+            .setMessage("Your break time for $appName has ended. The app will now be blocked again.")
+            .setCancelable(false)
+            .setPositiveButton("Okay") { _, _ ->
+                // Return to home screen
+                val homeIntent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_HOME)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(homeIntent)
+            }
+            .create()
+            .show()
     }
 }
 

@@ -1,18 +1,26 @@
 package app.olauncher.helper
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
+import app.olauncher.MainActivity
 import app.olauncher.data.Prefs
+import app.olauncher.helper.showToast
 import java.util.concurrent.TimeUnit
 
 class BreakManager(private val context: Context) {
     private val PREFS_NAME = "break_manager_prefs"
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val handler = Handler(Looper.getMainLooper())
+    private var toastRunnables = mutableMapOf<String, Runnable>()
     
     companion object {
         private const val KEY_BREAK_USAGE = "break_usage"  // Map of packageName to used break time
         private const val KEY_LAST_BREAK_START = "last_break_start"  // Map of packageName to last break start time
         private const val KEY_REMAINING_BREAK_TIME = "remaining_break_time"  // Map of packageName to remaining break time
+        private const val NOTIFICATION_INTERVAL = 5 * 60 * 1000L // 5 minutes in milliseconds
     }
 
     // Get remaining block time for an app
@@ -56,6 +64,7 @@ class BreakManager(private val context: Context) {
             val appPrefs = Prefs(context)
             val breakDuration = appPrefs.breakDuration * 60 * 1000L // Convert to milliseconds
             setRemainingBreakTime(packageName, breakDuration)
+            scheduleBreakNotifications(packageName, breakDuration)
         }
     }
 
@@ -112,5 +121,66 @@ class BreakManager(private val context: Context) {
 
     private fun formatBreakTimes(map: Map<String, Long>): String {
         return map.entries.joinToString(",", "{", "}") { "${it.key}:${it.value}" }
+    }
+
+    private fun scheduleBreakNotifications(packageName: String, totalBreakTime: Long) {
+        // Cancel any existing notifications for this package
+        cancelBreakNotifications(packageName)
+
+        val runnable = object : Runnable {
+            override fun run() {
+                val remainingTime = getRemainingBreakTime(packageName)
+                if (remainingTime <= 0) {
+                    showBreakEndedDialog(packageName)
+                    return
+                }
+
+                when {
+                    remainingTime <= 60 * 1000 -> { // Less than 1 minute
+                        context.showToast("Break time ending in 1 minute")
+                        handler.postDelayed(this, remainingTime)
+                    }
+                    remainingTime <= 5 * 60 * 1000 -> { // Less than 5 minutes
+                        context.showToast("${formatRemainingTime(remainingTime)} remaining")
+                        handler.postDelayed(this, 60 * 1000) // Check every minute
+                    }
+                    else -> {
+                        context.showToast("${formatRemainingTime(remainingTime)} remaining")
+                        handler.postDelayed(this, NOTIFICATION_INTERVAL)
+                    }
+                }
+            }
+        }
+
+        toastRunnables[packageName] = runnable
+        handler.postDelayed(runnable, NOTIFICATION_INTERVAL)
+    }
+
+    private fun cancelBreakNotifications(packageName: String) {
+        toastRunnables[packageName]?.let { runnable ->
+            handler.removeCallbacks(runnable)
+            toastRunnables.remove(packageName)
+        }
+    }
+
+    private fun showBreakEndedDialog(packageName: String) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("show_break_ended_dialog", true)
+            putExtra("package_name", packageName)
+        }
+        context.startActivity(intent)
+    }
+
+    fun stopBreak(packageName: String) {
+        cancelBreakNotifications(packageName)
+        setRemainingBreakTime(packageName, 0L)
+    }
+
+    override fun onDestroy() {
+        toastRunnables.forEach { (_, runnable) ->
+            handler.removeCallbacks(runnable)
+        }
+        toastRunnables.clear()
     }
 } 
