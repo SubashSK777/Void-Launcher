@@ -68,11 +68,16 @@ class BreakManager(private val context: Context) {
         }
     }
 
-    // Update break usage time
+    // Update break usage time and check for expiration
     fun updateBreakUsage(packageName: String, usageTime: Long) {
         val remainingTime = getRemainingBreakTime(packageName)
         val newRemainingTime = maxOf(0L, remainingTime - usageTime)
         setRemainingBreakTime(packageName, newRemainingTime)
+
+        // If time has expired, show force close dialog immediately
+        if (newRemainingTime <= 0) {
+            showForceCloseDialog(packageName)
+        }
     }
 
     // Get remaining break time for an app
@@ -131,21 +136,21 @@ class BreakManager(private val context: Context) {
             override fun run() {
                 val remainingTime = getRemainingBreakTime(packageName)
                 if (remainingTime <= 0) {
-                    showBreakEndedDialog(packageName)
+                    showForceCloseDialog(packageName)
                     return
                 }
 
                 when {
                     remainingTime <= 60 * 1000 -> { // Less than 1 minute
-                        context.showToast("Break time ending in 1 minute")
-                        handler.postDelayed(this, remainingTime)
+                        context.showToast(context.getString(R.string.break_time_ending))
+                        handler.postDelayed(this, remainingTime) // Schedule exact end time
                     }
                     remainingTime <= 5 * 60 * 1000 -> { // Less than 5 minutes
-                        context.showToast("${formatRemainingTime(remainingTime)} remaining")
+                        context.showToast(context.getString(R.string.break_time_remaining, formatRemainingTime(remainingTime)))
                         handler.postDelayed(this, 60 * 1000) // Check every minute
                     }
                     else -> {
-                        context.showToast("${formatRemainingTime(remainingTime)} remaining")
+                        context.showToast(context.getString(R.string.break_time_remaining, formatRemainingTime(remainingTime)))
                         handler.postDelayed(this, NOTIFICATION_INTERVAL)
                     }
                 }
@@ -163,10 +168,10 @@ class BreakManager(private val context: Context) {
         }
     }
 
-    private fun showBreakEndedDialog(packageName: String) {
+    private fun showForceCloseDialog(packageName: String) {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("show_break_ended_dialog", true)
+            putExtra("show_force_close_dialog", true)
             putExtra("package_name", packageName)
         }
         context.startActivity(intent)
